@@ -1,10 +1,21 @@
-body{
+
+
+/* body{
     background-color: lightblue;
     display: flex;
-    justify-content: center;
+    /* justify-content: center; */
+    /* justify-content: space-between; */
     /* --board-size: 80vw;
     --square-padding: calc(var(--board-size) / 16);
-    --square-size: calc(var(--board-size) / 8); */    
+    --square-size: calc(var(--board-size) / 8);
+} */
+
+.game-display{
+    background-color: lightblue;
+    outline: black solid 4px;
+    display: flex;
+    flex-direction: row;
+    width: 1480px;
 }
 
 .chess-board{
@@ -12,7 +23,9 @@ body{
     grid-template-columns: repeat(8, 1fr);
     width: 1024px;
     height: 1024px;
-    outline: black solid 2px;
+    resize: both;
+    outline: black solid 7px;
+
     /* grid-template-columns: repeat(8, 1fr);
     width: var(--board-size);
     height: var(--board-size); */
@@ -65,4 +78,54 @@ body{
     display: flex;
     justify-content: center;
     flex-direction: row;
+    outline: black solid 2px;
+    width: 1024px;
+}
+
+.toggle-btn {
+    font-size: 50px;
+    width: 70px;
+    height: 70px;
+    margin-top: 0px;
+    background-color: lightblue;
+    border: none;
+    outline: 2px solid black;
+}
+.reset-btn {
+    font-size: 50px;
+    width: 70px;
+    height: 70px;
+    margin-top: 0px;
+    background-color: lightblue;
+    border: none;
+    outline: 2px solid black;
+}
+
+.move-table{
+    font-size: 40px;
+    font-family: 'Times New Roman', Times, serif;
+    outline: solid 5px black;
+    width: 400px;
+    height: 1024px;
+    display: flex;
+    flex-direction: column;
+}
+
+.title{
+    font-size: 40px;
+    font-family: 'Times New Roman', Times, serif;
+    display: flex;
+    justify-content:space-evenly;
+}
+
+.move-history{
+    font-size: 35px;
+    font-family: 'Times New Roman', Times, serif;
+    display: flex;
+    flex-direction: column;
+}
+
+.move{
+    display: flex;
+    justify-content: space-evenly;
 }
