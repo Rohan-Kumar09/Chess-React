@@ -1,0 +1,1 @@
+export { default as moveSound } from './PieceSound.mp3';

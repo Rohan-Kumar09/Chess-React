@@ -1,61 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import './ChessBoard.css'
-
-
-function ChessBoard() {
-    const [selectedPiece, setSelectedPiece] = useState({piece: ' ', row: -1, col: -1, name: 'empty'});
-    const [board, setBoard] = useState(() => InitializeBoard());
-    const [turn, setTurn] = useState('white');
-    let color = 'white';
-    turn == 'white' ? color = 'rgb(104, 121, 214)' : color = 'darkblue';
-    const [playAs, setPlayAs] = useState('rotate(0deg)');
-    return (
-        <>
-            <div className='game-display'>
-                <div className="chess-board" style={{transform: playAs}}>
-                    <RenderBoard selectedPiece={selectedPiece} setSelectedPiece={setSelectedPiece}
-                    board={board} setBoard={setBoard} turn={turn} setTurn={setTurn} 
-                    playAs={playAs}/>
-                </div>
-                <div className='buttons'>
-                    <button className='toggle-btn' onClick={() => {
-                        playAs === 'rotate(180deg)' 
-                        ? setPlayAs('rotate(0deg)') 
-                        : setPlayAs('rotate(180deg)');
-                    }}>🔃</button>
-                    <button className='reset-btn' onClick={() => {
-                        setBoard(InitializeBoard());
-                        setTurn('white');
-                        setSelectedPiece({piece: ' ', row: -1, col: -1, name: 'empty'});
-                    }}>🔄</button>
-                </div>
-                <table className='move-table'>
-                    <tr className='title'>
-                        <th>Move</th>
-                        <th>White</th>
-                        <th>Black</th>
-                    </tr>
-                    <div className='move-history'>
-                        <tr className='move'>
-                            <td>1</td>
-                            <td>e4</td>
-                            <td>e5</td>
-                        </tr>
-                        <tr className='move'>
-                            <td>2</td>
-                            <td>...</td>
-                            <td>...</td>
-                        </tr>
-                    </div>
-                </table>
-            </div>
-            <div id='info'>
-                <label id='turn-variable'>Turn: </label>
-                <h1 id='turn-variable' style={{color: color}}>{turn}</h1>
-            </div>
-        </>
-    );
-}
+import './ChessBoard.css';
+import * as chessPieces from './assets/index.js'
+import { moveSound } from './assets/exportSound.js'
 
 /*
 
@@ -63,6 +9,9 @@ NOTE: turn set to white for debugging
 reset button is not well tested - don't trust it.
 
 TODO:
+add arrows on right click
+Add piece style chooser drop down menu.
+Add Valid Move Shower For Beginners.
 
 en passant
 king checks
@@ -78,9 +27,69 @@ dont allow the king to move to a square that is attacked by the opponent
 notation system
 */
 
+function ChessBoard() {
+    const audio = new Audio(moveSound); // sound for moving pieces
+    
+    const [board, setBoard] = useState(() => InitializeBoard());
+    const [selectedPiece, setSelectedPiece] = useState({piece: ' ', row: -1, col: -1, name: 'empty'});
+    const [turn, setTurn] = useState('white');
+    let color = 'white';
+    turn == 'white' ? color = 'rgb(104, 121, 214)' : color = 'darkblue';
+    const [playAs, setPlayAs] = useState('rotate(0deg)');
+    // const [pieceStyle, setPieceStyle] = useState(0);
+    return (
+        <>
+            <div className='game-display'>
+                <div className="chess-board" style={{transform: playAs}}>
+                    <RenderBoard selectedPiece={selectedPiece} setSelectedPiece={setSelectedPiece}
+                    board={board} setBoard={setBoard} turn={turn} setTurn={setTurn} 
+                    playAs={playAs} audio={audio}/>
+                </div>
+                <div className='buttons'>
+                    <button className='toggle-btn' onClick={() => {
+                        playAs === 'rotate(180deg)' 
+                        ? setPlayAs('rotate(0deg)') 
+                        : setPlayAs('rotate(180deg)');
+                    }}>🔃</button>
+                    <button className='reset-btn' onClick={() => {
+                        setBoard(InitializeBoard());
+                        setTurn('white');
+                        setSelectedPiece({piece: ' ', row: -1, col: -1, name: 'empty'});
+                    }}>🔄</button>
+                </div>
+                <table className='move-table'>
+                    <tbody>
+                        <tr className='title'>
+                            <th>Move</th>
+                            <th>White</th>
+                            <th>Black</th>
+                        </tr>
+                    </tbody>
+                    <tbody className='move-history'>
+                        <tr className='move'>
+                            <td>1</td>
+                            <td>e4</td>
+                            <td>e5</td>
+                        </tr>
+                        <tr className='move'>
+                            <td>2</td>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id='info'>
+                <label id='turn-variable'>Turn: </label>
+                <h1 id='turn-variable' style={{color: color}}>{turn}</h1>
+            </div>
+        </>
+    );
+}
+
 export default ChessBoard;
 
-function RenderBoard({selectedPiece, setSelectedPiece, board, setBoard, turn, setTurn, playAs}) {
+function RenderBoard({selectedPiece, setSelectedPiece, board, setBoard, turn, setTurn, playAs, audio}) {
     const [squares, setSquares] = useState([]);
     let classColor = 'White-Square';
     useEffect(() => {
@@ -102,24 +111,29 @@ function RenderBoard({selectedPiece, setSelectedPiece, board, setBoard, turn, se
                         e.preventDefault();
                         e.dataTransfer.dropEffect = "move";
                     }}
-                    onDrop={() => {MakeAMove(selectedPiece, i, j, setBoard, board, setSelectedPiece, turn, setTurn);}}
-                    onClick= {() => {
-                        console.log(i, j, board[i][j].name, board[i][j].coordinate);
-                        // only select a piece if it's the right turn
-                        if (turn === 'white' && board[i][j].name[0] === 'W'){
-                            setSelectedPiece({piece: board[i][j].emoji, row:i, col:j, name: board[i][j].name});
+                    onDrop={() => {MakeAMove(selectedPiece, i, j, setBoard, board, setSelectedPiece, turn, setTurn, audio);}}
+                    onClick={() => {
+                            console.log(i, j, board[i][j].name, board[i][j].coordinate);
+                            // only select a piece if it's the right turn
+                            if (turn === 'white' && board[i][j].name[0] === 'W'){
+                                setSelectedPiece({piece: board[i][j].emoji, row:i, col:j, name: board[i][j].name});
+                            }
+                            else if (turn === 'black' && board[i][j].name[0] === 'B'){
+                                setSelectedPiece({piece: board[i][j].emoji, row:i, col:j, name: board[i][j].name});
+                            }
+                            else if ((turn === 'white' && board[i][j].name[0] !== 'W') 
+                                || (turn === 'black' && board[i][j].name[0] !== 'B')
+                            ){ // then make a move
+                                MakeAMove(selectedPiece, i, j, setBoard, board, setSelectedPiece, turn, setTurn, audio);
+                            }
                         }
-                        else if (turn === 'black' && board[i][j].name[0] === 'B'){
-                            setSelectedPiece({piece: board[i][j].emoji, row:i, col:j, name: board[i][j].name});
-                        }
-                        else if ((turn === 'white' && board[i][j].name[0] !== 'W') 
-                            || (turn === 'black' && board[i][j].name[0] !== 'B')
-                    ){ // then make a move
-                        MakeAMove(selectedPiece, i, j, setBoard, board, setSelectedPiece, turn, setTurn);
                     }
-                }
-                }>
-                    {board[i][j].emoji}
+                    onContextMenu={(e) => {
+                        e.preventDefault();
+                        console.log('right click at position: ', board[i][j].coordinate);
+                        e.currentTarget.classList.add('right-clicked');
+                    }}
+                > <img src={chessPieces[board[i][j].name]} alt={board[i][j].emoji} />
                 </button>);
             }
         }
@@ -128,8 +142,8 @@ function RenderBoard({selectedPiece, setSelectedPiece, board, setBoard, turn, se
     return squares;
 }
 
-function MakeAMove(selectedPiece, goToRow, goToCol, setBoard, board, setSelectedPiece, turn, setTurn){
-    let isValidPieceMove = FindValidMoves(selectedPiece, goToRow, goToCol, board, turn, setTurn);
+function MakeAMove(selectedPiece, goToRow, goToCol, setBoard, board, setSelectedPiece, turn, setTurn, audio){
+    let isValidPieceMove = FindValidMoves(selectedPiece, goToRow, goToCol, board, turn, setTurn, audio);
     let newBoard = board;
     if (isValidPieceMove){
         if (selectedPiece.name[0] === 'W' && board[goToRow][goToCol].name[0] === 'W'){
@@ -143,6 +157,7 @@ function MakeAMove(selectedPiece, goToRow, goToCol, setBoard, board, setSelected
             return;
         }
         else { // if it's a valid move
+            audio.play();
             newBoard[selectedPiece.row][selectedPiece.col] = {emoji: ' ', name: 'empty'}; // remove the piece from the old square
             newBoard[goToRow][goToCol] = {emoji: selectedPiece.piece, name: selectedPiece.name}; // place the piece in the new square
             setSelectedPiece({emoji: ' ',row: -1, col: -1, name: 'empty'}); // remove the selected piece
@@ -234,13 +249,25 @@ function isBlocked(selectedPiece, goToRow, goToCol, board){
         }
     }
     else if (selectedPiece.name === 'Bqueen' || selectedPiece.name === 'Wqueen'){
-        let tempPiece = {name: 'Bbishop', row: selectedPiece.row, col: selectedPiece.col, piece: '♝'};
-        let isBishopMoveBlocked = isBlocked(tempPiece, goToRow, goToCol, board);
-        tempPiece = {name: 'Brook', row: selectedPiece.row, col: selectedPiece.col, piece: '♜'};
-        let isRookMoveBlocked = isBlocked(tempPiece, goToRow, goToCol, board);
-        if (isBishopMoveBlocked || isRookMoveBlocked){
-            console.log('queen blocked');
-            return true;
+        if (goToRow === selectedPiece.row || goToCol === selectedPiece.col){
+            // rook move
+            if (isBlocked({name: 'Brook', row: selectedPiece.row, col: selectedPiece.col, piece: '♜'},
+                goToRow, goToCol, board)
+            ){
+                console.log('queen blocked');
+                return true;
+            }
+        }
+        else if (goToRow + goToCol === selectedPiece.row + selectedPiece.col
+            || goToRow - goToCol === selectedPiece.row - selectedPiece.col
+        ){
+            // bishop move
+            if (isBlocked({name: 'Bbishop', row: selectedPiece.row, col: selectedPiece.col, piece: '♝'},
+                goToRow, goToCol, board)
+            ){
+                console.log('queen blocked');
+                return true;
+            }
         }
     }
     return false;
@@ -249,7 +276,7 @@ function isBlocked(selectedPiece, goToRow, goToCol, board){
 
 // this function moves the selected piece to the square that was clicked
 // and sets the board to new board with right piece in right place
-function FindValidMoves(selectedPiece, goToRow, goToCol, board, turn, setTurn){
+function FindValidMoves(selectedPiece, goToRow, goToCol, board, turn, setTurn, audio){
     // NOTE: out of bound errors can never happen because the board is 8x8
     // it's impossible to go out of bounds
     if (goToRow === selectedPiece.row && goToCol === selectedPiece.col) return false;
@@ -271,6 +298,7 @@ function FindValidMoves(selectedPiece, goToRow, goToCol, board, turn, setTurn){
                     break; // if there's a piece in front of it
                 }
                 if (goToRow === 0){ // promote the pawn
+                    audio.play();
                     board[goToRow][goToCol] = {emoji: pieces.Wqueen.emoji, name: pieces.Wqueen.name};
                     board[selectedPiece.row][selectedPiece.col] = {emoji: ' ', name: 'empty'};
                     switchTurn(turn, setTurn);
@@ -291,6 +319,7 @@ function FindValidMoves(selectedPiece, goToRow, goToCol, board, turn, setTurn){
                 ))){
                 isValidPieceMove = true;
                 if (goToRow === 0){ // promote the pawn
+                    audio.play();
                     board[goToRow][goToCol] = {emoji: pieces.Wqueen.emoji, name: pieces.Wqueen.name};
                     board[selectedPiece.row][selectedPiece.col] = {emoji: ' ', name: 'empty'};
                     switchTurn(turn, setTurn);
@@ -368,6 +397,7 @@ function FindValidMoves(selectedPiece, goToRow, goToCol, board, turn, setTurn){
                     break; // if there's a piece in front of it
                 }
                 if (goToRow === 7){ // promote the pawn
+                    audio.play();
                     board[goToRow][goToCol] = {emoji: pieces.Bqueen.emoji, name: pieces.Bqueen.name};
                     board[selectedPiece.row][selectedPiece.col] = {emoji: ' ', name: 'empty'};
                     switchTurn(turn, setTurn);
@@ -385,6 +415,7 @@ function FindValidMoves(selectedPiece, goToRow, goToCol, board, turn, setTurn){
                 || selectedPiece.col - 1 === goToCol)  && (board[goToRow][goToCol].name[0] === 'W')
                 ))){
                 if (goToRow === 7){
+                    audio.play();
                     board[goToRow][goToCol] = {emoji: pieces.Bqueen.emoji, name: pieces.Bqueen.name};
                     board[selectedPiece.row][selectedPiece.col] = {emoji: ' ', name: 'empty'};
                     switchTurn(turn, setTurn);

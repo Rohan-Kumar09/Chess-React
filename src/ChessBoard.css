@@ -1,4 +1,7 @@
-
+:root{
+    --black-square-color: #b58863;
+    --white-square-color: #f0d9b5;
+}
 
 /* body{
     background-color: lightblue;
@@ -57,13 +60,12 @@
     box-shadow: none;
 }
 
-
 .White-Square{
-    background-color: #f0d9b5;
+    background-color: var(--white-square-color);
 }
 
 .Black-Square{
-    background-color: #b58863;
+    background-color: var(--black-square-color);
 }
 
 #turn-variable{

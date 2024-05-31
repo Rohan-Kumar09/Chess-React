@@ -1,0 +1,12 @@
+export { default as Wpawn } from './Wpawn.png';
+export { default as Bpawn } from './Bpawn.png';
+export { default as Wrook } from './Wrook.png';
+export { default as Brook } from './Brook.png';
+export { default as Wknight } from './Wknight.png';
+export { default as Bknight } from './Bknight.png';
+export { default as Wbishop } from './Wbishop.png';
+export { default as Bbishop } from './Bbishop.png';
+export { default as Wqueen } from './Wqueen.png';
+export { default as Bqueen } from './Bqueen.png';
+export { default as Wking } from './Wking.png';
+export { default as Bking } from './Bking.png';
