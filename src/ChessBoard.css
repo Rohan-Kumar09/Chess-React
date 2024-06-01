@@ -13,6 +13,10 @@
     --square-size: calc(var(--board-size) / 8);
 } */
 
+.right-clicked-square{
+    background-color: blue;
+}
+
 .game-display{
     background-color: lightblue;
     outline: black solid 4px;

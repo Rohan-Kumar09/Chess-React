@@ -9,12 +9,13 @@ NOTE: turn set to white for debugging
 reset button is not well tested - don't trust it.
 
 TODO:
+king checks
+
 add arrows on right click
 Add piece style chooser drop down menu.
 Add Valid Move Shower For Beginners.
 
 en passant
-king checks
 checkmate detection
 castling
 
@@ -29,6 +30,7 @@ notation system
 
 function ChessBoard() {
     const audio = new Audio(moveSound); // sound for moving pieces
+    const [history, setHistory] = useState([]); // history of moves
     
     const [board, setBoard] = useState(() => InitializeBoard());
     const [selectedPiece, setSelectedPiece] = useState({piece: ' ', row: -1, col: -1, name: 'empty'});
@@ -106,13 +108,17 @@ function RenderBoard({selectedPiece, setSelectedPiece, board, setBoard, turn, se
                     onDragStart={(e) => {
                         e.dataTransfer.effectAllowed = "move";
                         setSelectedPiece({piece: board[i][j].emoji, row:i, col:j, name: board[i][j].name});
+                        let img = new Image();
+                        img.src = chessPieces[board[i][j].name];
+                        e.dataTransfer.setDragImage(img, 50, 50);
                     }}
                     onDragOver={(e) => {
                         e.preventDefault();
                         e.dataTransfer.dropEffect = "move";
                     }}
                     onDrop={() => {MakeAMove(selectedPiece, i, j, setBoard, board, setSelectedPiece, turn, setTurn, audio);}}
-                    onClick={() => {
+                    onClick={(e) => {
+                            e.preventDefault();
                             console.log(i, j, board[i][j].name, board[i][j].coordinate);
                             // only select a piece if it's the right turn
                             if (turn === 'white' && board[i][j].name[0] === 'W'){
@@ -131,9 +137,23 @@ function RenderBoard({selectedPiece, setSelectedPiece, board, setBoard, turn, se
                     onContextMenu={(e) => {
                         e.preventDefault();
                         console.log('right click at position: ', board[i][j].coordinate);
-                        e.currentTarget.classList.add('right-clicked');
+                        if (e.currentTarget.style.backgroundColor === 'red'){
+                            if (classColor === 'White-Square'){
+                                let element = document.querySelector('.White-Square');
+                                let style = window.getComputedStyle(element);
+                                e.currentTarget.style.backgroundColor = style.backgroundColor;
+                            }
+                            else if (classColor === 'Black-Square'){
+                                let element = document.querySelector('.Black-Square');
+                                let style = window.getComputedStyle(element);
+                                e.currentTarget.style.backgroundColor = style.backgroundColor;
+                            }
+                        }
+                        else{
+                            e.currentTarget.style.backgroundColor = 'red';
+                        }
                     }}
-                > <img src={chessPieces[board[i][j].name]} alt={board[i][j].emoji} />
+                > <img className='chess-piece' src={chessPieces[board[i][j].name]} alt={board[i][j].emoji} />
                 </button>);
             }
         }
@@ -142,9 +162,14 @@ function RenderBoard({selectedPiece, setSelectedPiece, board, setBoard, turn, se
     return squares;
 }
 
+// PreCondition: selectedPiece is a valid piece
+// PostCondition: moves the selected piece to the goToRow and goToCol
+//                Switches turn to other player's turn and sets the new board
+//                Promotes pawns if they reach the end of the board
 function MakeAMove(selectedPiece, goToRow, goToCol, setBoard, board, setSelectedPiece, turn, setTurn, audio){
     let isValidPieceMove = FindValidMoves(selectedPiece, goToRow, goToCol, board, turn, setTurn, audio);
     let newBoard = board;
+    const pieces = Pieces();
     if (isValidPieceMove){
         if (selectedPiece.name[0] === 'W' && board[goToRow][goToCol].name[0] === 'W'){
             // if white captures white piece, return
@@ -158,21 +183,29 @@ function MakeAMove(selectedPiece, goToRow, goToCol, setBoard, board, setSelected
         }
         else { // if it's a valid move
             audio.play();
-            newBoard[selectedPiece.row][selectedPiece.col] = {emoji: ' ', name: 'empty'}; // remove the piece from the old square
-            newBoard[goToRow][goToCol] = {emoji: selectedPiece.piece, name: selectedPiece.name}; // place the piece in the new square
+            newBoard[selectedPiece.row][selectedPiece.col] = {emoji: ' ', name: 'empty', coordinate: board[selectedPiece.row][selectedPiece.col].coordinate}; // remove the piece from the old square
+            newBoard[goToRow][goToCol] = {emoji: selectedPiece.piece, name: selectedPiece.name, coordinate: board[goToRow][goToCol].coordinate}; // place the piece in the new square
+
+            if (selectedPiece.name === 'Wpawn' && goToRow === 0){ // if white pawn on promotion square
+                board[goToRow][goToCol] = {emoji: pieces.Wqueen.emoji, name: pieces.Wqueen.name}; // promote the pawn to a queen
+            }
+            else if (selectedPiece.name === 'Bpawn' && goToRow === 7){ // if black pawn on promotion square
+                board[goToRow][goToCol] = {emoji: pieces.Bqueen.emoji, name: pieces.Bqueen.name}; // promote the pawn to a queen
+            }
             setSelectedPiece({emoji: ' ',row: -1, col: -1, name: 'empty'}); // remove the selected piece
         }
     }
     else if (!isValidPieceMove){
         // remove selected piece if invalid move
         setSelectedPiece({emoji: ' ',row: -1, col: -1, name: 'empty'});
-        return;
+        return; // if invalid move then don't change turn.
     } 
-    // if invalid move then don't change turn.
     switchTurn(turn, setTurn);
     setBoard(newBoard);
 }
 
+// PreCondition: selectedPiece is a valid piece
+// PostCondition: returns true if there's a piece blocking the selected piece from moving to goToRow and goToCol
 function isBlocked(selectedPiece, goToRow, goToCol, board){
     if (selectedPiece.name === 'Bpawn'){
         if (board[selectedPiece.row + 1][selectedPiece.col].name[0] !== 'e'){
@@ -274,8 +307,8 @@ function isBlocked(selectedPiece, goToRow, goToCol, board){
 }
 
 
-// this function moves the selected piece to the square that was clicked
-// and sets the board to new board with right piece in right place
+// PreCondition: selectedPiece is a valid piece
+// PostCondition: returns true if the piece move is valid, false otherwise
 function FindValidMoves(selectedPiece, goToRow, goToCol, board, turn, setTurn, audio){
     // NOTE: out of bound errors can never happen because the board is 8x8
     // it's impossible to go out of bounds
@@ -296,13 +329,6 @@ function FindValidMoves(selectedPiece, goToRow, goToCol, board, turn, setTurn, a
                 if (board[goToRow][goToCol].name[0] === 'B'){
                     // if goint forward and there's a piece in front of it
                     break; // if there's a piece in front of it
-                }
-                if (goToRow === 0){ // promote the pawn
-                    audio.play();
-                    board[goToRow][goToCol] = {emoji: pieces.Wqueen.emoji, name: pieces.Wqueen.name};
-                    board[selectedPiece.row][selectedPiece.col] = {emoji: ' ', name: 'empty'};
-                    switchTurn(turn, setTurn);
-                    break; // return false because the pawn has been promoted
                 }
                 if (goToRow === 4){ // if it's moving 2 squares
                     if (isBlocked(selectedPiece, goToRow, goToCol, board)){
@@ -395,13 +421,6 @@ function FindValidMoves(selectedPiece, goToRow, goToCol, board, turn, setTurn, a
                 ){
                 if (board[goToRow][goToCol].name[0] === 'W'){
                     break; // if there's a piece in front of it
-                }
-                if (goToRow === 7){ // promote the pawn
-                    audio.play();
-                    board[goToRow][goToCol] = {emoji: pieces.Bqueen.emoji, name: pieces.Bqueen.name};
-                    board[selectedPiece.row][selectedPiece.col] = {emoji: ' ', name: 'empty'};
-                    switchTurn(turn, setTurn);
-                    break; // return false because the pawn has been promoted
                 }
                 if (goToRow === 3){ // if it's moving 2 squares
                     if (isBlocked(selectedPiece, goToRow, goToCol, board)){
