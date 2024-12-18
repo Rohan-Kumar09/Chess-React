@@ -1,6 +1,6 @@
 import { FindValidMoves } from './ValidMoves.js'; // function for finding valid piece moves
-import { switchTurn } from './SwitchTurn.js'; // function for switching turn
 import { Pieces } from './InitializeBoard.js'; // function for returning piece types
+import { switchTurn } from './Utils.js';
 
 // PreCondition: selectedPiece is a valid piece
 // PostCondition: moves the selected piece to the goToRow and goToCol

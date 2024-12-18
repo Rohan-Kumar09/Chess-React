@@ -7,3 +7,7 @@ export function switchTurn(turn, setTurn){
         setTurn('white');
     }
 }
+
+export const getClassColor = (i, j) => {
+    return ((j - i) % 2) === 0 ? 'White-Square' : 'Black-Square';
+};
