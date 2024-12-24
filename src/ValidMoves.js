@@ -1,5 +1,4 @@
-import { Pieces } from './InitializeBoard.js'; // function for returning piece types
-import { switchTurn } from './Utils.js';
+import { Pieces, switchTurn } from './Utils.js'; // function for returning piece types and switching turns
 
 // PreCondition: selectedPiece is a valid piece
 // PostCondition: returns true if the piece move is valid, false otherwise

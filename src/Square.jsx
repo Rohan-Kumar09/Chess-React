@@ -3,6 +3,13 @@ import * as chessPieces from './assets/index.js';
 import { MakeAMove } from './MakeMove.js';
 
 const Square = ({ i, j, classColor, playAs, board, setSelectedPiece, selectedPiece, setBoard, turn, setTurn, audio }) => {
+    const handleDrop = () => {
+        const move = MakeAMove(selectedPiece, i, j, setBoard, board, setSelectedPiece, turn, setTurn, audio);
+        if (move) {
+          onMove(move);
+        }
+    };
+    
     return (
         <button
             style={{ transform: playAs }}

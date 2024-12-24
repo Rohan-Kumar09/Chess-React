@@ -1,6 +1,5 @@
 import { FindValidMoves } from './ValidMoves.js'; // function for finding valid piece moves
-import { Pieces } from './InitializeBoard.js'; // function for returning piece types
-import { switchTurn } from './Utils.js';
+import { Pieces, switchTurn } from './Utils.js'; // function for returning piece types and switching turns
 
 // PreCondition: selectedPiece is a valid piece
 // PostCondition: moves the selected piece to the goToRow and goToCol
@@ -36,10 +35,10 @@ export function MakeAMove(selectedPiece, goToRow, goToCol, setBoard, board, setS
         }
     }
     else if (!isValidPieceMove){
-        // remove selected piece if invalid move
+        // reset selected piece if invalid move
         setSelectedPiece({emoji: ' ',row: -1, col: -1, name: 'empty'});
         return; // if invalid move then don't change turn.
-    } 
+    }
     switchTurn(turn, setTurn);
     setBoard(newBoard);
 }
