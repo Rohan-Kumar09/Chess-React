@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Square from './Square';
-import { getClassColor } from './Utils';
+import { getClassColor } from '../utils/Utils';
 
 export function RenderBoard({ selectedPiece, setSelectedPiece, board, setBoard, turn, setTurn, playAs, audio, onMove }) {
     const [squares, setSquares] = useState([]);

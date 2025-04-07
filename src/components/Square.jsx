@@ -1,6 +1,6 @@
 import React from 'react';
-import * as chessPieces from './assets/index.js';
-import { MakeAMove } from './MakeMove.js';
+import * as chessPieces from '../assets/index.js';
+import { MakeAMove } from '../utils/MakeMove.js';
 
 const Square = ({ i, j, classColor, playAs, board, setSelectedPiece, selectedPiece, setBoard, turn, setTurn, audio }) => {
     const handleDrop = () => {

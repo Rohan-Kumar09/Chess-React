@@ -1,12 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import './ChessBoard.css';
-// import * as chessPieces from './assets/index.js'
-import { moveSound } from './assets/exportSound.js'
-import { InitializeBoard } from './Utils.js'; // function for initializing board
-import { RenderBoard } from './RenderBoard.jsx'; // function for rendering board
-import Info from './Info.jsx'; // function for displaying turn
-import MoveHistory from './MoveHistory.jsx';
-import Buttons from './Buttons.jsx';
+import React, {useState} from 'react';
+import '../styles/ChessBoard.css';
+import { moveSound } from '../assets/exportSound.js'
+import { InitializeBoard } from '../utils/Utils.js'; // function for initializing board
+import { RenderBoard } from '../components/RenderBoard.jsx'; // function for rendering board
+import Info from '../components/Info.jsx'; // function for displaying turn
+import MoveHistory from '../components/MoveHistory.jsx';
+import Buttons from '../components/SideButtons.jsx';
 
 /*
 
@@ -51,18 +50,21 @@ function ChessBoard() {
     return (
         <>
             <div className='game-display'>
-                <div className="chess-board" style={{transform: playAs}}>
-                    <RenderBoard 
-                        selectedPiece={selectedPiece} 
-                        setSelectedPiece={setSelectedPiece}
-                        board={board} 
-                        setBoard={setBoard} 
-                        turn={turn} 
-                        setTurn={setTurn} 
-                        playAs={playAs} 
-                        audio={audio}
-                        onMove={handleMove}
-                    />
+                <div className="chess-board-plus-info">
+                    <div className="chess-board" style={{transform: playAs}}>
+                        <RenderBoard 
+                            selectedPiece={selectedPiece} 
+                            setSelectedPiece={setSelectedPiece}
+                            board={board} 
+                            setBoard={setBoard} 
+                            turn={turn} 
+                            setTurn={setTurn} 
+                            playAs={playAs} 
+                            audio={audio}
+                            onMove={handleMove}
+                        />
+                    </div>
+                    <Info turn={turn} color={color} />
                 </div>
                 <MoveHistory history={history} />
                 <Buttons
@@ -73,7 +75,6 @@ function ChessBoard() {
                     setSelectedPiece={setSelectedPiece}
                 />
             </div>
-            <Info turn={turn} color={color} />
         </>
     );
 }

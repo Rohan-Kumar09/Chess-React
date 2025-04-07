@@ -1,19 +1,16 @@
 import React from 'react';
-import './MoveHistory.css';
 
 function MoveHistory({ history }) {
   return (
     <div className="move-history">
       <h2>Move History</h2>
       <table>
-        <thead>
-          <tr>
-            <th>Move</th>
-            <th>White</th>
-            <th>Black</th>
-          </tr>
-        </thead>
-        <tbody>
+        <tr>
+          <th>Move</th>
+          <th>White</th>
+          <th>Black</th>
+        </tr>
+        {/* <tbody>
           {history.map((move, index) => (
             <tr key={index}>
               <td>{index + 1}</td>
@@ -21,7 +18,7 @@ function MoveHistory({ history }) {
               <td>{move.black}</td>
             </tr>
           ))}
-        </tbody>
+        </tbody> */}
       </table>
     </div>
   );
