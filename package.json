@@ -1,8 +1,8 @@
 {
-  "homepage": "https://Rohan-Kumar09.github.io/Chess_Repo",
+  "homepage": "https://reliable-cranachan-10444a.netlify.app/",
   "name": "chess",
-  "private": true,
-  "version": "0.0.0",
+  "private": false,
+  "version": "0.0.1",
   "scripts": {
     "build": "vite build",
     "dev": "vite",
