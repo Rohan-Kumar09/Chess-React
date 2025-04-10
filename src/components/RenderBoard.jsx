@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Square from './Square';
 import { getClassColor } from '../utils/Utils';
 
-export function RenderBoard({ selectedPiece, setSelectedPiece, board, setBoard, turn, setTurn, playAs, audio, onMove }) {
+export function RenderBoard({ selectedPiece, setSelectedPiece, board, setBoard, turn, setTurn, playAs, audio }) {
     const [squares, setSquares] = useState([]);
 
     useEffect(() => {
@@ -24,7 +24,6 @@ export function RenderBoard({ selectedPiece, setSelectedPiece, board, setBoard, 
                         turn={turn}
                         setTurn={setTurn}
                         audio={audio}
-                        onMove={onMove}
                     />
                 );
             }

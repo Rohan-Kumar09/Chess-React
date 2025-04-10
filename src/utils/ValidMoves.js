@@ -3,7 +3,7 @@ import { Pieces, switchTurn } from './Utils.js'; // function for returning piece
 // PreCondition: selectedPiece is a valid piece
 // PostCondition: returns true if the piece move is valid, false otherwise
 export function FindValidMoves(selectedPiece, goToRow, goToCol, board, turn, setTurn, audio){
-    // NOTE: out of bound errors can never happen because the board is 8x8
+    // NOTE: out of bound errors can never happen because the board's buttons are confined to 8x8 space
     // it's impossible to go out of bounds
     if (goToRow === selectedPiece.row && goToCol === selectedPiece.col) return false;
     if (turn == 'white' && selectedPiece.name[0] != 'W') return false;

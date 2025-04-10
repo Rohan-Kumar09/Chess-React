@@ -1,15 +1,8 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import * as chessPieces from '../assets/index.js';
 import { MakeAMove } from '../utils/MakeMove.js';
 
 const Square = ({ i, j, classColor, playAs, board, setSelectedPiece, selectedPiece, setBoard, turn, setTurn, audio }) => {
-    const handleDrop = () => {
-        const move = MakeAMove(selectedPiece, i, j, setBoard, board, setSelectedPiece, turn, setTurn, audio);
-        if (move) {
-          onMove(move);
-        }
-    };
-    
     return (
         <button
             style={{ transform: playAs }}
@@ -17,26 +10,32 @@ const Square = ({ i, j, classColor, playAs, board, setSelectedPiece, selectedPie
             className={classColor}
             key={`${i}-${j}`}
             draggable={true}
-            onDragStart={(e) => {
-                e.dataTransfer.effectAllowed = "move";
-                setSelectedPiece({ piece: board[i][j].emoji, row: i, col: j, name: board[i][j].name });
-                let img = new Image();
-                img.src = chessPieces[board[i][j].name];
-                e.dataTransfer.setDragImage(img, 50, 50);
-            }}
-            onDragOver={(e) => {
-                e.preventDefault();
-                e.dataTransfer.dropEffect = "move";
-            }}
-            onDrop={() => { MakeAMove(selectedPiece, i, j, setBoard, board, setSelectedPiece, turn, setTurn, audio); }}
+            // onDragStart={(e) => {
+            //     e.dataTransfer.effectAllowed = "move";
+            //     setSelectedPiece({ piece: board[i][j].emoji, row: i, col: j, name: board[i][j].name });
+            //     let img = new Image();
+            //     img.src = chessPieces[board[i][j].name];
+            //     e.dataTransfer.setDragImage(img, 50, 50);
+            // }}
+            // onDragOver={(e) => {
+            //     e.preventDefault();
+            //     e.dataTransfer.dropEffect = "move";
+            // }}
+            // onDrop={() => { MakeAMove(selectedPiece, i, j, setBoard, board, setSelectedPiece, turn, setTurn, audio); }}
             onClick={(e) => {
                 e.preventDefault();
                 console.log(i, j, board[i][j].name, board[i][j].coordinate);
                 if (turn === 'white' && board[i][j].name[0] === 'W') {
+                    console.log(board[i][j].coordinate);
+
                     setSelectedPiece({ piece: board[i][j].emoji, row: i, col: j, name: board[i][j].name });
                 } else if (turn === 'black' && board[i][j].name[0] === 'B') {
+                    console.log(board[i][j].coordinate);
+
                     setSelectedPiece({ piece: board[i][j].emoji, row: i, col: j, name: board[i][j].name });
                 } else if ((turn === 'white' && board[i][j].name[0] !== 'W') || (turn === 'black' && board[i][j].name[0] !== 'B')) {
+                    console.log(board[i][j].coordinate);
+                    
                     MakeAMove(selectedPiece, i, j, setBoard, board, setSelectedPiece, turn, setTurn, audio);
                 }
             }}
@@ -58,9 +57,9 @@ const Square = ({ i, j, classColor, playAs, board, setSelectedPiece, selectedPie
                 }
             }}
         >
-            {board[i][j].name !== 'empty' && (
-                <img className='chess-piece' src={chessPieces[board[i][j].name]} alt={board[i][j].emoji} />
-            )}
+        {board[i][j].name !== 'empty' && (
+            <img className='chess-piece' src={chessPieces[board[i][j].name]} alt={board[i][j].emoji} />
+        )}
         </button>
     );
 };

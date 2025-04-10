@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import '../styles/ChessBoard.css';
 import { moveSound } from '../assets/exportSound.js'
 import { InitializeBoard } from '../utils/Utils.js'; // function for initializing board
@@ -6,6 +6,7 @@ import { RenderBoard } from '../components/RenderBoard.jsx'; // function for ren
 import Info from '../components/Info.jsx'; // function for displaying turn
 import MoveHistory from '../components/MoveHistory.jsx';
 import Buttons from '../components/SideButtons.jsx';
+import { botServer } from '../botServer.js';
 
 /*
 
@@ -40,9 +41,35 @@ function ChessBoard() {
     const [turn, setTurn] = useState('white');
     const [playAs, setPlayAs] = useState('rotate(0deg)');
     
-    const handleMove = (move) => {
-        setHistory((prevHistory) => [...prevHistory, move]);
+    const [fen, setFen] = useState('');
+    const [move, setMove] = useState({ from: '', to: '' });
+    const [engineMove, setEngineMove] = useState('');
+    const engine = botServer();
+
+    useEffect(() => {
+        async function initializeEngine() {
+            await engine.initializeEngine();
+            const firstFen = await engine.getFen();
+            setFen(firstFen);
+        }
+        initializeEngine();
+        const firstMove = async () => {
+            const firstMove = await engine.getFirstMove();
+            setEngineMove(firstMove);
+        }
+        firstMove();
+    }, []); // Runs once on mount
+
+    const getFen = async () => {
+        const newFen = await engine.getFen();
+        setFen(newFen);
     };
+
+    const getBestMove = async () => {
+        const bestMove = await engine.getBestMove();
+        setEngineMove(bestMove);
+    }
+
 
     let color = 'white';
     turn == 'white' ? color = 'rgb(104, 121, 214)' : color = 'darkblue';
@@ -61,7 +88,6 @@ function ChessBoard() {
                             setTurn={setTurn} 
                             playAs={playAs} 
                             audio={audio}
-                            onMove={handleMove}
                         />
                     </div>
                     <Info turn={turn} color={color} />

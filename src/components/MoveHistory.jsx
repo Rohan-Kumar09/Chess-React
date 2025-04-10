@@ -5,11 +5,13 @@ function MoveHistory({ history }) {
     <div className="move-history">
       <h2>Move History</h2>
       <table>
-        <tr>
-          <th>Move</th>
-          <th>White</th>
-          <th>Black</th>
-        </tr>
+        <thead>
+          <tr>
+            <th>Move</th>
+            <th>White</th>
+            <th>Black</th>
+          </tr>
+        </thead>
         {/* <tbody>
           {history.map((move, index) => (
             <tr key={index}>
