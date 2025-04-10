@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Square from './Square';
 import { getClassColor } from '../utils/Utils';
+import { useChess } from '../context/ChessProvider.jsx';
 
-export function RenderBoard({ selectedPiece, setSelectedPiece, board, setBoard, turn, setTurn, playAs, audio }) {
+export function RenderBoard() {
+    const { selectedPiece, setSelectedPiece, board, setBoard, turn, setTurn, playAs, audio } = useChess();
     const [squares, setSquares] = useState([]);
 
     useEffect(() => {
@@ -16,14 +18,6 @@ export function RenderBoard({ selectedPiece, setSelectedPiece, board, setBoard, 
                         i={i}
                         j={j}
                         classColor={classColor}
-                        playAs={playAs}
-                        board={board}
-                        setSelectedPiece={setSelectedPiece}
-                        selectedPiece={selectedPiece}
-                        setBoard={setBoard}
-                        turn={turn}
-                        setTurn={setTurn}
-                        audio={audio}
                     />
                 );
             }

@@ -1,6 +1,8 @@
 import React from 'react';
+import { useChess } from '../context/ChessProvider';
 
-function MoveHistory({ history }) {
+function MoveHistory() {
+  const { history } = useChess();
   return (
     <div className="move-history">
       <h2>Move History</h2>

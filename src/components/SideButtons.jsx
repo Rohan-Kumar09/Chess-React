@@ -1,8 +1,10 @@
 import React from 'react';
 import '../styles/ChessBoard.css';
 import { InitializeBoard } from '../utils/Utils';
+import { useChess } from '../context/ChessProvider';
 
-const Buttons = ({ playAs, setPlayAs, setBoard, setTurn, setSelectedPiece }) => {
+const SideButtons = () => {
+    const { playAs, setPlayAs, setBoard, setTurn, setSelectedPiece } = useChess();
     return (
         <>
             <div className='side-buttons'>
@@ -19,4 +21,4 @@ const Buttons = ({ playAs, setPlayAs, setBoard, setTurn, setSelectedPiece }) => 
     );
 };
 
-export default Buttons;
+export default SideButtons;

@@ -1,12 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect } from 'react';
+import { useChess } from '../context/ChessProvider.jsx';
 import '../styles/ChessBoard.css';
-import { moveSound } from '../assets/exportSound.js'
-import { InitializeBoard } from '../utils/Utils.js'; // function for initializing board
 import { RenderBoard } from '../components/RenderBoard.jsx'; // function for rendering board
 import Info from '../components/Info.jsx'; // function for displaying turn
 import MoveHistory from '../components/MoveHistory.jsx';
-import Buttons from '../components/SideButtons.jsx';
-import { botServer } from '../botServer.js';
+import SideButtons from '../components/SideButtons.jsx';
 
 /*
 
@@ -34,42 +32,7 @@ notation system
 */
 
 function ChessBoard() {
-    const audio = new Audio(moveSound); // sound for moving pieces
-    const [history, setHistory] = useState([]); // history of moves
-    const [board, setBoard] = useState(() => InitializeBoard());
-    const [selectedPiece, setSelectedPiece] = useState({piece: ' ', row: -1, col: -1, name: 'empty'});
-    const [turn, setTurn] = useState('white');
-    const [playAs, setPlayAs] = useState('rotate(0deg)');
-    
-    const [fen, setFen] = useState('');
-    const [move, setMove] = useState({ from: '', to: '' });
-    const [engineMove, setEngineMove] = useState('');
-    const engine = botServer();
-
-    useEffect(() => {
-        async function initializeEngine() {
-            await engine.initializeEngine();
-            const firstFen = await engine.getFen();
-            setFen(firstFen);
-        }
-        initializeEngine();
-        const firstMove = async () => {
-            const firstMove = await engine.getFirstMove();
-            setEngineMove(firstMove);
-        }
-        firstMove();
-    }, []); // Runs once on mount
-
-    const getFen = async () => {
-        const newFen = await engine.getFen();
-        setFen(newFen);
-    };
-
-    const getBestMove = async () => {
-        const bestMove = await engine.getBestMove();
-        setEngineMove(bestMove);
-    }
-
+    const { turn, playAs } = useChess(); 
 
     let color = 'white';
     turn == 'white' ? color = 'rgb(104, 121, 214)' : color = 'darkblue';
@@ -79,27 +42,12 @@ function ChessBoard() {
             <div className='game-display'>
                 <div className="chess-board-plus-info">
                     <div className="chess-board" style={{transform: playAs}}>
-                        <RenderBoard 
-                            selectedPiece={selectedPiece} 
-                            setSelectedPiece={setSelectedPiece}
-                            board={board} 
-                            setBoard={setBoard} 
-                            turn={turn} 
-                            setTurn={setTurn} 
-                            playAs={playAs} 
-                            audio={audio}
-                        />
+                        <RenderBoard />
                     </div>
-                    <Info turn={turn} color={color} />
+                    <Info />
                 </div>
-                <MoveHistory history={history} />
-                <Buttons
-                    playAs={playAs}
-                    setPlayAs={setPlayAs}
-                    setBoard={setBoard}
-                    setTurn={setTurn}
-                    setSelectedPiece={setSelectedPiece}
-                />
+                <MoveHistory />
+                <SideButtons />
             </div>
         </>
     );

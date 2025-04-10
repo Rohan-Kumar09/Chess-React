@@ -1,7 +1,9 @@
 import React from 'react';
 import '../styles/ChessBoard.css';
+import { useChess } from '../context/ChessProvider.jsx';
 
-function Info({ turn, color }) {
+function Info() {
+  const { turn, color } = useChess();
   return (
     <div id='info'>
         <label id='turn-variable'>Turn: </label>

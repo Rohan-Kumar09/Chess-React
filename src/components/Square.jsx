@@ -1,8 +1,10 @@
 import React, { useRef } from 'react';
 import * as chessPieces from '../assets/index.js';
 import { MakeAMove } from '../utils/MakeMove.js';
+import { useChess } from '../context/ChessProvider.jsx';
 
-const Square = ({ i, j, classColor, playAs, board, setSelectedPiece, selectedPiece, setBoard, turn, setTurn, audio }) => {
+const Square = ({ i, j, classColor }) => {
+    const {playAs, board, setSelectedPiece, selectedPiece, setBoard, turn, setTurn, audio} = useChess();
     return (
         <button
             style={{ transform: playAs }}
