@@ -3,12 +3,13 @@ import StockfishWorker from 'stockfish/src/stockfish-nnue-16-single.js?worker';
 // some reference code.
 
 
+var depth = 1;
 var fen = "";
 let fenResolver = null;
 var bestMove = "";
 let bestMoveResolver = null;
+
 var isEngineReady = false;
-var isGameOver = false;
 const engine = new StockfishWorker();
 
 engine.onmessage = (event) => {
@@ -28,14 +29,16 @@ engine.onmessage = (event) => {
     } else {
         if (info.includes("bestmove")) {
             bestMove = info.split(" ")[1];
-            console.log("Best Move:", bestMove);
+            console.log("Best Move: ", bestMove);
             if (bestMoveResolver) {
                 bestMoveResolver(bestMove);
                 bestMoveResolver = null;
             }
         } else if (info.slice(0, 3) == "Fen") {
             // case Position is received
-            fen = info;
+            console.log(info.slice(5, info.length));
+            fen = info.slice(5, info.length);
+            console.log("Fen from engine: ", fen);
             if (fenResolver) {
                 fenResolver(fen);
                 fenResolver = null;
@@ -49,7 +52,6 @@ engine.onerror = (err) => {
 };
 
 export function botServer() {
-
     async function initializeEngine() {
         engine.postMessage("uci");
         engine.postMessage("isready");
@@ -65,11 +67,17 @@ export function botServer() {
     function newGame() {
         engine.postMessage("ucinewgame");
         engine.postMessage("isready");
+        engine.postMessage("position startpos moves")
     }
 
-    function sendFen(fen) {
-        console.log("Sending FEN to engine:", fen);
-        engine.postMessage(fen);
+    function sendFen(fen, userMove, start = false) {
+        if (start) {
+            console.log("Sending startpos to engine: ", `position startpos moves ${userMove}`);
+            engine.postMessage(`position startpos moves ${userMove}`);
+        } else {
+            console.log("Fen with userMove: ", `position fen ${fen} moves ${userMove}`);
+            engine.postMessage(`position fen ${fen} moves ${userMove}`);
+        }
     }
 
     async function getFen() {
@@ -80,7 +88,8 @@ export function botServer() {
     }
 
     async function getBestMove() {
-        engine.postMessage("go depth 15");
+        engine.postMessage(`go depth ${depth}`);
+        engine.postMessage("eval");
         return new Promise((resolve) => {
             bestMoveResolver = resolve;
         });

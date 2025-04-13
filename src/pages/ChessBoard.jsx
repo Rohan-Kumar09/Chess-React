@@ -32,10 +32,12 @@ notation system
 */
 
 function ChessBoard() {
-    const { turn, playAs } = useChess(); 
+    const { turn, playAs, setColor } = useChess(); 
 
-    let color = 'white';
-    turn == 'white' ? color = 'rgb(104, 121, 214)' : color = 'darkblue';
+    useEffect(() => {
+        turn == 'white' ? setColor('rgb(104, 121, 214)') : setColor('darkblue');
+    }, [turn, setColor])
+
     // const [pieceStyle, setPieceStyle] = useState(0);
     return (
         <>

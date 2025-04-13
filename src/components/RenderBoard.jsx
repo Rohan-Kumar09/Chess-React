@@ -4,26 +4,26 @@ import { getClassColor } from '../utils/Utils';
 import { useChess } from '../context/ChessProvider.jsx';
 
 export function RenderBoard() {
-    const { selectedPiece, setSelectedPiece, board, setBoard, turn, setTurn, playAs, audio } = useChess();
+    const { board, engineMove, botMoved } = useChess();
     const [squares, setSquares] = useState([]);
 
     useEffect(() => {
         let newSquares = [];
-        for (let i = 0; i < 8; i++) {
-            for (let j = 0; j < 8; j++) {
-                const classColor = getClassColor(i, j);
+        for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+                const classColor = getClassColor(row, col);
                 newSquares.push(
                     <Square
-                        key={`${i}-${j}`}
-                        i={i}
-                        j={j}
+                        key={`${row}-${col}`} // for react to identify the square
+                        row={row}
+                        col={col}
                         classColor={classColor}
                     />
                 );
             }
         }
         setSquares(newSquares);
-    }, [board, selectedPiece, playAs, setSelectedPiece, setBoard, turn, setTurn, audio]);
+    }, [ board, engineMove, botMoved ]);
 
     return <>{squares}</>;
 }

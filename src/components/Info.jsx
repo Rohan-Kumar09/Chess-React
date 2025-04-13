@@ -6,8 +6,8 @@ function Info() {
   const { turn, color } = useChess();
   return (
     <div id='info'>
-        <label id='turn-variable'>Turn: </label>
-        <h1 id='turn-variable' style={{color: color}}>{turn}</h1>
+        <label className='turn-variable'>Turn: </label>
+        <h1 className='turn-variable' style={{color: color}}>{turn}</h1>
     </div>);
 }
 

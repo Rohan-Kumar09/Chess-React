@@ -4,7 +4,7 @@ import { InitializeBoard } from '../utils/Utils';
 import { useChess } from '../context/ChessProvider';
 
 const SideButtons = () => {
-    const { playAs, setPlayAs, setBoard, setTurn, setSelectedPiece } = useChess();
+    const { playAs, setPlayAs, setBoard, setTurn, setSelectedPiece, engine } = useChess();
     return (
         <>
             <div className='side-buttons'>
@@ -12,6 +12,7 @@ const SideButtons = () => {
                     playAs === 'rotate(180deg)' ? setPlayAs('rotate(0deg)') : setPlayAs('rotate(180deg)');
                 }}>🔃</button>
                 <button className='reset-btn' onClick={() => {
+                    engine.newGame();
                     setBoard(InitializeBoard());
                     setTurn('white');
                     setSelectedPiece({piece: ' ', row: -1, col: -1, name: 'empty'});
