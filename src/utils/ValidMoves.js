@@ -5,14 +5,18 @@ import { Pieces, switchTurn } from './Utils.js'; // function for returning piece
 export function FindValidMoves(selectedPiece, goToRow, goToCol, board, turn, setTurn, audio){
     // NOTE: out of bound errors can never happen because the board's buttons are confined to 8x8 space
     // it's impossible to go out of bounds
+
     if (goToRow === selectedPiece.row && goToCol === selectedPiece.col) return false;
     if (turn == 'white' && selectedPiece.name[0] != 'W') return false;
     if (turn == 'black' && selectedPiece.name[0] != 'B') return false;
+
     const pieces = Pieces();
+
     let isValidPieceMove = false;
     switch(selectedPiece.piece){
         // white pieces
         case pieces.Wpawn.emoji:
+            // Moving 2 spaces or 1 initially
             if ((selectedPiece.col === goToCol // check if on same col
                 && selectedPiece.row === 6 // check if on starting row
                 && goToRow === selectedPiece.row - 2) // let it move 2 squares if on starting row
@@ -29,7 +33,7 @@ export function FindValidMoves(selectedPiece, goToRow, goToCol, board, turn, set
                     }
                 }
                 isValidPieceMove = true;
-            }
+            } // Diagonal Capture, Pawn promotion, 1 space moves
             else if((((selectedPiece.row - 1 === goToRow) 
                 && (selectedPiece.col - 1 === goToCol 
                 || selectedPiece.col + 1 === goToCol)
@@ -44,6 +48,27 @@ export function FindValidMoves(selectedPiece, goToRow, goToCol, board, turn, set
                     switchTurn(turn, setTurn);
                     break; // return false because the pawn has been promoted
                 }
+            } // Diagonal move for EN Passant capture
+            else if (
+                ((selectedPiece.row - 1) == goToRow) &&
+                ((selectedPiece.col == goToCol) || (selectedPiece.col + 1 == goToCol)) &&
+                (board[goToRow][goToCol].name === 'empty') &&
+                selectedPiece.row === 3
+            ) {
+                // Check if the last move was a black pawn moving two squares forward
+                // get history of move's last move
+                // if it was set valid to true
+                
+                // const last = board.lastMove;
+                // // Check if the last move was a black pawn moving two squares forward
+                // if (
+                //     last.piece === pieces.Bpawn.emoji &&
+                //     last.from.row === 1 &&
+                //     last.to.row === 3 &&
+                //     last.to.col === goToCol
+                // ){
+                //     isValidPieceMove = true;
+                // }
             }
             break;
         case pieces.Wrook.emoji:
@@ -134,6 +159,22 @@ export function FindValidMoves(selectedPiece, goToRow, goToCol, board, turn, set
                     break; // return false because the pawn has been promoted
                 }
                 isValidPieceMove = true;
+            } 
+            else if ((selectedPiece.col === goToCol) &&
+                selectedPiece.row === 1 &&
+                (goToRow === selectedPiece.row + 2) || (selectedPiece.col === goToCol) &&
+                goToRow === selectedPiece.row + 1
+            ) {
+                // const last = board.lastMove;
+                // // Check if the last move was a white pawn moving two squares forward
+                // if (
+                //     last.piece === pieces.Wpawn.emoji &&
+                //     last.from.row === 6 &&
+                //     last.to.row === 4 &&
+                //     last.to.col === goToCol
+                // ){
+                //     isValidPieceMove = true;
+                // }
             }
             break;
         case pieces.Brook.emoji:
@@ -298,4 +339,101 @@ function isBlocked(selectedPiece, goToRow, goToCol, board){
         }
     }
     return false;
+}
+
+function findKing(board, turn) {
+    const kingName = turn === 'white' ? 'Wking' : 'Bking';
+    for (let r = 0; r < board.length; r++) {
+        for (let c = 0; c < board[r].length; c++) {
+            if (board[r][c].name === kingName) {
+                return { 
+                    row: r, col: c
+                };
+            }
+        }
+    }
+    return null;
+}
+
+// find out if the square is under attack
+function isSquareAttacked(board, square, ownTurn) {
+    const opponent = ownTurn === 'white' ? 'B' : 'W';
+    // Create dummy objects for audio and setTurn that do nothing.
+    const dummyAudio = { play: () => {} };
+    const dummySetTurn = () => {};
+    // Loop through the board looking for enemy pieces.
+    for (let r = 0; r < board.length; r++) {
+        for (let c = 0; c < board[r].length; c++) {
+            const piece = board[r][c];
+            if (piece.name[0] === opponent) {
+                // Create a dummy selectedPiece object.
+                let selectedPiece = {
+                    piece: piece.emoji,
+                    row: r,
+                    col: c,
+                    name: piece.name
+                };
+                // If enemy piece can move to target square, square is attacked.
+                if (FindValidMoves(selectedPiece, square.row, square.col, board, opponent, dummySetTurn, dummyAudio)) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+export function isKingSafeAfterMove(board, turn) {
+    // Find king's position for the current turn.
+    const kingPos = findKing(board, turn);
+    if (!kingPos) return false;
+    // If any enemy piece can move to the king's square, the king is in check.
+    return !isSquareAttacked(board, kingPos, turn);
+}
+
+export function inCheckmate(board, turn) {
+    // If the king is not in check, it can't be checkmate.
+    if (isKingSafeAfterMove(board, turn)) return false;
+
+    // Iterate over every square looking for a piece belonging to "turn"
+    for (let r = 0; r < board.length; r++) {
+        for (let c = 0; c < board[r].length; c++) {
+            const piece = board[r][c];
+            if (piece.name[0] !== (turn === 'white' ? 'W' : 'B')) continue;
+
+            // Try every possible destination square.
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    // Use dummy functions for audio/setTurn parameters.
+                    const dummyAudio = { play: () => {} };
+                    const dummySetTurn = () => {};
+
+                    // If move is valid for this piece...
+                    if (
+                        FindValidMoves(
+                            { piece: piece.emoji, row: r, col: c, name: piece.name },
+                            row,
+                            col,
+                            board,
+                            turn,
+                            dummySetTurn,
+                            dummyAudio
+                        )
+                    ) {
+                        // Create a deep copy of the board and simulate the move.
+                        const simBoard = JSON.parse(JSON.stringify(board));
+                        simBoard[row][col] = simBoard[r][c];
+                        simBoard[r][c] = { emoji: ' ', name: 'empty' };
+
+                        // If after this move the king is safe then it's not checkmate.
+                        if (isKingSafeAfterMove(simBoard, turn)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // No legal moves can resolve the check.
+    return true;
 }

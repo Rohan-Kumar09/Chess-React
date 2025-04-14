@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import * as chessPieces from '../assets/index.js';
-import { MakeAMove } from '../utils/MakeMove.js';
+import { MakeAMove, isTheGameOver } from '../utils/MakeMove.js';
 import { useChess } from '../context/ChessProvider.jsx';
 
 const Square = ({ row, col, classColor }) => {
     const { setMoveTo, setMoveFrom, playAs, board, 
             setSelectedPiece, selectedPiece, setBoard,
-            turn, setTurn, audio, setUserMove } = useChess();
+            turn, setTurn, audio, setUserMove,
+            setHistory, setIsGameOver, isGameOver } = useChess();
 
     const [dragging, setDragging] = useState(false);
     const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
     const [offset, setOffset] = useState({ x: 0, y: 0 });
+
+    useEffect(() => {
+        if(isGameOver) {
+            alert("Game Over!")
+        }
+    })
 
     const handleMouseDown = (event) => {
         event.preventDefault();
@@ -94,7 +101,19 @@ const Square = ({ row, col, classColor }) => {
                 } else if ((turn === 'white' && board[row][col].name[0] !== 'W') || (turn === 'black' && board[row][col].name[0] !== 'B')) {
                     setMoveTo(board[row][col].coordinate);
                     setUserMove(board[row][col].coordinate);
+                    if (isTheGameOver()) {
+                        alert("Game Over!");
+                        setIsGameOver(true);
+                        return;
+                    }
                     MakeAMove(selectedPiece, row, col, setBoard, board, setSelectedPiece, turn, setTurn, audio);
+
+                    // record user's move in history
+                    if (selectedPiece.name !== 'empty') {
+                        const move = `${selectedPiece.name} ${selectedPiece.row}${selectedPiece.col} ${row}${col}`;
+                        setHistory((prevHistory) => [...prevHistory, move]);
+                        console.log("User's move logging in history: ", move);
+                    }
                 }
             }}
             onContextMenu={( event ) => {

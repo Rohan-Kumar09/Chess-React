@@ -17,6 +17,7 @@ export const ChessProvider = ({ children }) => {
     const [turn, setTurn] = useState('white');
     const [playAs, setPlayAs] = useState('rotate(0deg)');
     const [userMove, setUserMove] = useState('');
+    const [isGameOver, setIsGameOver] = useState(false); // State to track if the game is over
     
     const [moveTo, setMoveTo] = useState('');
     const [moveFrom, setMoveFrom] = useState('');
@@ -66,7 +67,11 @@ export const ChessProvider = ({ children }) => {
         };
         // setSelectedPiece({ piece: board[from.row][from.col].emoji, row: to.row, col: to.col, name: board[from.row][from.col].name });
         MakeAMove(botPiece, to.row, to.col, setBoard, board, setSelectedPiece, turn, setTurn, audio);
-        // switchTurn(turn, setTurn, setPlayAs);
+        
+        // record Bot's move in history
+        const move = `${botPiece.name} ${from.row}${from.col} ${to.row}${to.col}`;
+        setHistory((prevHistory) => [...prevHistory, move]);
+        console.log("Bot's move logging in history: ", move);
     };
 
     useEffect(() => {
@@ -75,7 +80,7 @@ export const ChessProvider = ({ children }) => {
             console.log("Bot's turn");
             handleBotMove();
         }
-    }, [moveTo, moveFrom]) // Runs when the turn changes to black
+    }, [turn]) // Runs when the turn changes to black
 
     return (
         <ChessContext.Provider
@@ -90,7 +95,8 @@ export const ChessProvider = ({ children }) => {
                 moveTo, setMoveTo,
                 moveFrom, setMoveFrom,
                 engine,
-                userMove, setUserMove
+                userMove, setUserMove,
+                isGameOver, setIsGameOver
             }}
         >
         {children}

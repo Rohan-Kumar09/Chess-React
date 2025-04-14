@@ -14,15 +14,17 @@ function MoveHistory() {
             <th>Black</th>
           </tr>
         </thead>
-        {/* <tbody>
-          {history.map((move, index) => (
-            <tr key={index}>
-              <td>{index + 1}</td>
-              <td>{move.white}</td>
-              <td>{move.black}</td>
-            </tr>
-          ))}
-        </tbody> */}
+        <tbody>
+        {
+            history.map((value, index) => (
+                <tr key={index}>
+                    <td>
+                        {value}
+                    </td>
+                </tr>
+            ))
+        }
+        </tbody>
       </table>
     </div>
   );
