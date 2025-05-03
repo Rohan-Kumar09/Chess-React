@@ -8,25 +8,17 @@ import SideButtons from '../components/SideButtons.jsx';
 
 /*
 
-NOTE: turn set to white for debugging
+NOTE: Set to white for debugging
 reset button is not well tested - don't trust it.
 
 TODO:
-king checks
-
-add arrows on right click
+Add arrows on right click
 Add piece style chooser drop down menu.
 Add Valid Move Shower For Beginners.
 
 en passant
 checkmate detection
 castling
-
-pins - don't allow the king to move if it's in check
-
-forks - attack two pieces at once
-
-dont allow the king to move to a square that is attacked by the opponent
 
 notation system
 */
@@ -42,14 +34,18 @@ function ChessBoard() {
     return (
         <>
             <div className='game-display'>
-                <div className="chess-board-plus-info">
+                <div className="board-info-container">
                     <div className="chess-board" style={{transform: playAs}}>
                         <RenderBoard />
                     </div>
                     <Info />
                 </div>
-                <MoveHistory />
-                <SideButtons />
+                <div className="move-history-container">
+                    <MoveHistory />
+                </div>
+                <div className="side-buttons-container">
+                    <SideButtons />
+                </div>
             </div>
         </>
     );

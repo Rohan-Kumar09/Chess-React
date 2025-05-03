@@ -17,32 +17,33 @@
     --default-font: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif
 }
 
-body {
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-
-    height: 100vh;
-    width: 100vw;
-
-    background-color: var(--background-color);
-    overflow: hidden;
-}
-
 .game-display {
     background-color: var(--background-color);
     display: flex;
     flex-direction: row;
     justify-content: center;
+    align-items: center;
+    height: 100dvh;
+    width: 100dvw;
+    overflow: hidden;
+}
+
+.board-info-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    height: 100vh;
 }
 
 .chess-board {
     display: grid;
     grid-template-rows: repeat(8, var(--square-size));
     grid-template-columns: repeat(8, var(--square-size));
+    padding-top: 5em;
 }
 
-#Squares {
+.Squares {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -53,16 +54,14 @@ body {
 .chess-piece {
     width: 100%;
     height: 100%;
-
-    object-fit: contain;
 }
 
-#Squares:hover {
+.Squares:hover {
     cursor: grab;
     background: transparent;
 }
 
-#Squares:active {
+.Squares:active {
     cursor: grabbing;
 }
 
@@ -97,9 +96,26 @@ body {
 
 /* move history */
 
+.move-history-container {
+    display: flex;
+    height: 100vh;
+    padding-top: 5em;
+}
+
+.side-buttons-container {
+    display: flex;
+    height: 100vh;
+    padding-top: 5em;
+}
+
 .move-history {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    background: #fff;
+    border-radius: 12px;
+    height: calc(var(--square-size) * 8);
+    overflow-y: auto;
 }
 
 .move-history h2 {
@@ -109,11 +125,44 @@ body {
     color: rgb(26, 39, 218);
 }
 
-.move-history th {
-    font-size: 1rem;
+.move-history table {
+    border-collapse: collapse;
+    width: 100%;
+    background: #f8f9fa;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.move-history tr {
+    height: 2.5rem; /* Fixed height for all rows */
+}
+
+.move-history th, .move-history td {
+    border: 1px solid #e0e0e0;
+    padding: 0.5rem 1rem;
+    text-align: center;
     font-family: var(--default-font);
-    font-weight: normal;
-    color: rgb(26, 39, 218);
+    font-size: 1.1rem;
+    vertical-align: middle;
+}
+
+.move-history th {
+    background: #e3e8ff;
+    color: #1a27da;
+    font-weight: bold;
+}
+
+.move-history tr:nth-child(even) td {
+    background: #f0f4ff;
+}
+
+.move-history tr:nth-child(odd) td {
+    background: #ffffff;
+}
+
+.move-history td {
+    color: #333;
+    font-size: 1.05rem;
 }
 
 /* side buttons */
@@ -121,22 +170,92 @@ body {
 .side-buttons {
     display: flex;
     flex-direction: column;
-    justify-content: start;
+    justify-content: flex-start;
     align-items: center;
 }
 
 .toggle-btn {
-    font-size: 3vw;
-    width: 5vw;
-    height: 5vw;
+    font-size: 3rem;
     background-color: var(--background-color);
     border: none;
 }
 
 .reset-btn {
-    font-size: 3vw;
-    width: 5vw;
-    height: 5vw;
+    font-size: 3rem;
     background-color: var(--background-color);
     border: none;
+}
+/* Media query */
+
+@media(max-width: 1000px) {
+    .game-display {
+        flex-direction: column;
+        overflow-y: auto;
+        height: auto;
+        padding: 1rem;
+    }
+
+    .board-info-container,
+    .move-history-container,
+    .side-buttons-container {
+        height: auto;
+        width: 100%;
+        padding-top: 1em;
+        margin-bottom: 1rem;
+    }
+
+    .chess-board {
+        padding-top: 1em;
+        --square-size: min(11vw, 11vh);
+    }
+
+    .move-history {
+        height: auto;
+        max-height: 50vh;
+        width: calc(min(11vw, 11vh) * 8);
+    }
+
+    #info {
+        width: calc(min(11vw, 11vh) * 8);
+        justify-content: center;
+    }
+
+    .side-buttons {
+       flex-direction: row;
+       justify-content: space-around;
+       width: 100%;
+    }
+}
+
+/* Game Over Overlay */
+.game-over-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 100;
+}
+
+.game-over-message {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.game-over-message h2 {
+    font-size: 2rem;
+    color: #b58863;
+    margin-bottom: 1rem;
+}
+
+.game-over-message p {
+    font-size: 1.5rem;
+    color: #333;
 }

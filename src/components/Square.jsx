@@ -1,23 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import * as chessPieces from '../assets/index.js';
-import { MakeAMove, isTheGameOver } from '../utils/MakeMove.js';
+import { MakeAMove } from '../utils/MakeMove.js';
 import { useChess } from '../context/ChessProvider.jsx';
 
 const Square = ({ row, col, classColor }) => {
     const { setMoveTo, setMoveFrom, playAs, board, 
             setSelectedPiece, selectedPiece, setBoard,
             turn, setTurn, audio, setUserMove,
-            setHistory, setIsGameOver, isGameOver } = useChess();
+            setHistory } = useChess();
 
     const [dragging, setDragging] = useState(false);
     const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
     const [offset, setOffset] = useState({ x: 0, y: 0 });
-
-    useEffect(() => {
-        if(isGameOver) {
-            alert("Game Over!")
-        }
-    })
 
     const handleMouseDown = (event) => {
         event.preventDefault();
@@ -60,39 +54,15 @@ const Square = ({ row, col, classColor }) => {
         return () => {
             window.removeEventListener('mousemove', handleGlobalMouseMove);
         };
-    }, [dragging, offset, board, row, col, selectedPiece, setBoard, turn, setTurn, audio, setMoveTo, setUserMove, setSelectedPiece]);
+    }, [dragging, offset]);
 
 
     return (
         <button
             style={{ transform: playAs }}
-            id='Squares'
-            className={classColor}
+            className={`${classColor} Squares`}
             key={`${row}-${col}`} // for react to identify the square
             draggable={false}
-            // onMouseDown={handleMouseDown}
-            // onMouseUp={handleMouseUp}
-            // onDragStart={(event) => event.preventDefault()} // prevent drag start
-            // onDragOver={(event) => event.preventDefault()} // prevent drag over
-            // onDrop={(event) => {
-            //     event.preventDefault();
-            //     setDragging(false); // ensure dragging state is reset
-            // }}
-
-            
-            // onDragStart={( event ) => {
-            //     event.dataTransfer.effectAllowed = "move";
-            //     setSelectedPiece({ piece: board[row][col].emoji, row: row, col: col, name: board[row][col].name });
-            //     let img = new Image();
-            //     img.src = chessPieces[board[row][col].name];
-            //     img.style.opacity = 1;
-            //     event.dataTransfer.setDragImage(img);
-            // }}
-            // onDragOver={( event ) => {
-            //     event.preventDefault();
-            //     event.dataTransfer.dropEffect = "move";
-            // }}
-            // onDrop={() => { console.log('dropped'); MakeAMove(selectedPiece, row, col, setBoard, board, setSelectedPiece, turn, setTurn, audio); }}
             onClick = {async (event) => {
                 event.preventDefault();
                 if (turn === 'white' && board[row][col].name[0] === 'W' || turn === 'black' && board[row][col].name[0] === 'B') {
@@ -101,15 +71,8 @@ const Square = ({ row, col, classColor }) => {
                 } else if ((turn === 'white' && board[row][col].name[0] !== 'W') || (turn === 'black' && board[row][col].name[0] !== 'B')) {
                     setMoveTo(board[row][col].coordinate);
                     setUserMove(board[row][col].coordinate);
-                    if (isTheGameOver()) {
-                        alert("Game Over!");
-                        setIsGameOver(true);
-                        return;
-                    }
-                    MakeAMove(selectedPiece, row, col, setBoard, board, setSelectedPiece, turn, setTurn, audio);
-
-                    // record user's move in history
-                    if (selectedPiece.name !== 'empty') {
+                    const moveWasValid = MakeAMove(selectedPiece, row, col, setBoard, board, setSelectedPiece, turn, setTurn, audio);
+                    if (moveWasValid && selectedPiece.name !== 'empty') {
                         const move = `${selectedPiece.name} ${selectedPiece.row}${selectedPiece.col} ${row}${col}`;
                         setHistory((prevHistory) => [...prevHistory, move]);
                         console.log("User's move logging in history: ", move);
@@ -136,20 +99,6 @@ const Square = ({ row, col, classColor }) => {
         >
         {board[row][col].name !== 'empty' && (
             <img className='chess-piece' src={chessPieces[board[row][col].name]} alt={board[row][col].emoji} />
-        )}
-        {dragging && (
-            <img
-                className='chess-piece'
-                src={chessPieces[board[row][col].name]}
-                alt={board[row][col].emoji}
-                style={{
-                    position: 'absolute',
-                    top: dragPos.y,
-                    left: dragPos.x,
-                    pointerEvents: 'none',
-                    zIndex: 1000
-                }}
-            />
         )}
         </button>
     );

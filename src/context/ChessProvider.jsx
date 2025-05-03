@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { InitializeBoard } from '../utils/Utils.js';
+import { InitializeBoard, switchTurn } from '../utils/Utils.js';
 import { moveSound } from '../assets/exportSound.js';
-import { botServer } from '../botServer.js';
+import { botServer } from '../BotServer.js';
 import { MakeAMove } from '../utils/MakeMove.js';
 import { coordinateMap } from '../utils/Utils.js';
 
@@ -17,8 +17,7 @@ export const ChessProvider = ({ children }) => {
     const [turn, setTurn] = useState('white');
     const [playAs, setPlayAs] = useState('rotate(0deg)');
     const [userMove, setUserMove] = useState('');
-    const [isGameOver, setIsGameOver] = useState(false); // State to track if the game is over
-    
+    const [isGameOver, setIsGameOver] = useState(false);
     const [moveTo, setMoveTo] = useState('');
     const [moveFrom, setMoveFrom] = useState('');
     const engine = botServer();
@@ -28,27 +27,22 @@ export const ChessProvider = ({ children }) => {
             await engine.initializeEngine();
         }
         initializeEngine();
-        // const firstMove = async () => {
-        //     const fm = await engine.getFirstMove();
-        //     setEngineMove(fm);
-        // }
-        // firstMove();
-    }, []); // Runs once on mount
- 
+    }, []);
+
     const parseMove = (moveStr) => {
         let botPieceLocation = moveStr.slice(0, 2);
         let botMove = moveStr.slice(2, 4);
-        const { col: fromCol, row: formRow } = coordinateMap[botPieceLocation];
+        const { col: fromCol, row: fromRow } = coordinateMap[botPieceLocation];
         const { col: toCol, row: toRow } = coordinateMap[botMove];
-        console.log("from: ", formRow, fromCol, "to: ", toRow, toCol);
+
+        console.log("from: ", fromRow, fromCol, "to: ", toRow, toCol);
         return {
-            from: { row: formRow, col: fromCol },
+            from: { row: fromRow, col: fromCol },
             to: { row: toRow, col: toCol }
         };
     };
-    
-    const handleBotMove = async () => {
 
+    const handleBotMove = async () => {
         fenFromEngine = await engine.getFen(); // initial fen
         engine.sendFen(fenFromEngine, moveFrom + moveTo); // send initial fen with user move
         const moveStr = await engine.getBestMove(); // engine's move
@@ -75,12 +69,17 @@ export const ChessProvider = ({ children }) => {
     };
 
     useEffect(() => {
+        if (isGameOver) {
+            console.log("Game Over!");
+            return;
+        }
+
         console.log("Turn : ", turn);
         if (turn === 'black') {
             console.log("Bot's turn");
             handleBotMove();
         }
-    }, [turn]) // Runs when the turn changes to black
+    }, [turn, isGameOver, board, moveFrom, moveTo]);
 
     return (
         <ChessContext.Provider

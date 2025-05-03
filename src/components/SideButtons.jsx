@@ -4,7 +4,7 @@ import { InitializeBoard } from '../utils/Utils';
 import { useChess } from '../context/ChessProvider';
 
 const SideButtons = () => {
-    const { playAs, setPlayAs, setBoard, setTurn, setSelectedPiece, engine } = useChess();
+    const { playAs, setPlayAs, setBoard, setTurn, setSelectedPiece, engine, setHistory } = useChess();
     return (
         <>
             <div className='side-buttons'>
@@ -15,6 +15,7 @@ const SideButtons = () => {
                     engine.newGame();
                     setBoard(InitializeBoard());
                     setTurn('white');
+                    setHistory([]);
                     setSelectedPiece({piece: ' ', row: -1, col: -1, name: 'empty'});
                 }}>🔄</button>
             </div>

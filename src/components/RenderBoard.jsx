@@ -4,7 +4,7 @@ import { getClassColor } from '../utils/Utils';
 import { useChess } from '../context/ChessProvider.jsx';
 
 export function RenderBoard() {
-    const { board, engineMove, botMoved } = useChess();
+    const { board, engineMove, botMoved, isGameOver, turn, winner } = useChess();
     const [squares, setSquares] = useState([]);
 
     useEffect(() => {
@@ -25,5 +25,17 @@ export function RenderBoard() {
         setSquares(newSquares);
     }, [ board, engineMove, botMoved ]);
 
-    return <>{squares}</>;
+    return (
+        <>
+            {squares}
+            {isGameOver && (
+                <div className="game-over-overlay">
+                    <div className="game-over-message">
+                        <h2>Game Over!</h2>
+                        <p>{winner ? `${winner.charAt(0).toUpperCase() + winner.slice(1)} wins by checkmate.` : 'Checkmate.'}</p>
+                    </div>
+                </div>
+            )}
+        </>
+    );
 }
