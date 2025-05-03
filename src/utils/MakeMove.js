@@ -44,15 +44,24 @@ export function MakeAMove(selectedPiece, goToRow, goToCol, setBoard, board, setS
     
     // The move is valid, apply it to the new board
     audio.play();
+    const originalPiece = newBoard[selectedPiece.row][selectedPiece.col];
+    
+    // Clear the original square
     newBoard[selectedPiece.row][selectedPiece.col] = {
         emoji: ' ', 
         name: 'empty', 
         coordinate: board[selectedPiece.row][selectedPiece.col].coordinate
     };
+    
+    // Move to the new square, preserving hasMoved status if it exists
     newBoard[goToRow][goToCol] = {
         emoji: selectedPiece.piece, 
         name: selectedPiece.name, 
-        coordinate: board[goToRow][goToCol].coordinate
+        coordinate: board[goToRow][goToCol].coordinate,
+        // Set hasMoved to true if this is a king or rook
+        hasMoved: selectedPiece.name === 'Wking' || selectedPiece.name === 'Bking' || 
+                  selectedPiece.name === 'Wrook' || selectedPiece.name === 'Brook' ? 
+                  (originalPiece.hasMoved || true) : undefined
     };
 
     // Handle en passant capture
@@ -89,13 +98,6 @@ export function MakeAMove(selectedPiece, goToRow, goToCol, setBoard, board, setS
     }
     else if (selectedPiece.name === 'Bpawn' && selectedPiece.row === 1 && goToRow === 3) {
         newBoard[goToRow][goToCol].lastMovedTwo = true;
-    }
-
-    // Mark king or rook as moved (for castling rights)
-    if (selectedPiece.name === 'Wking' || selectedPiece.name === 'Bking' || selectedPiece.name === 'Wrook' || selectedPiece.name === 'Brook') {
-        if (newBoard[goToRow][goToCol].hasMoved === false) { // Check if it exists before setting
-            newBoard[goToRow][goToCol].hasMoved = true;
-        }
     }
 
     // Handle Castling Rook Move

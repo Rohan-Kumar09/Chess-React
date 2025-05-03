@@ -190,7 +190,7 @@ export function FindValidMoves(selectedPiece, goToRow, goToCol, board, turn){
             break;
         case pieces.Bking.emoji:
             // Normal 1-square move
-             if (Math.abs(goToRow - selectedPiece.row) <= 1 && Math.abs(goToCol - selectedPiece.col) <= 1){
+            if (Math.abs(goToRow - selectedPiece.row) <= 1 && Math.abs(goToCol - selectedPiece.col) <= 1){
                 isValidPieceMove = true;
             }
             // Castling Check (Black)
@@ -393,7 +393,7 @@ export function isSquareAttacked(board, square, playerColor) {
 // Helper function for isSquareAttacked: Checks if a piece *could* move to a square, ignoring check rules.
 // This is needed because isSquareAttacked calls FindValidMoves, which calls isKingInCheckAfterMove, creating a potential infinite loop.
 function canPieceAttackSquare(selectedPiece, goToRow, goToCol, board) {
-     // NOTE: out of bound errors can never happen because the board's buttons are confined to 8x8 space
+    // NOTE: out of bound errors can never happen because the board's buttons are confined to 8x8 space
     // it's impossible to go out of bounds
 
     if (goToRow === selectedPiece.row && goToCol === selectedPiece.col) return false;
@@ -453,7 +453,7 @@ function canPieceAttackSquare(selectedPiece, goToRow, goToCol, board) {
             }
             break;
         case pieces.Wking.emoji:
-             if (Math.abs(goToRow - selectedPiece.row) <= 1 && Math.abs(goToCol - selectedPiece.col) <= 1){
+            if (Math.abs(goToRow - selectedPiece.row) <= 1 && Math.abs(goToCol - selectedPiece.col) <= 1){
                 isValidPieceMove = true;
             }
             break;
@@ -510,7 +510,7 @@ function canPieceAttackSquare(selectedPiece, goToRow, goToCol, board) {
             }
             break;
         case pieces.Bking.emoji:
-             if (Math.abs(goToRow - selectedPiece.row) <= 1 && Math.abs(goToCol - selectedPiece.col) <= 1){
+            if (Math.abs(goToRow - selectedPiece.row) <= 1 && Math.abs(goToCol - selectedPiece.col) <= 1){
                 isValidPieceMove = true;
             }
             break;
@@ -521,50 +521,45 @@ function canPieceAttackSquare(selectedPiece, goToRow, goToCol, board) {
     return isValidPieceMove;
 }
 
+/*
+The king's path should not be in check. 
+the king's path must be cleared.
+the rook must not have moved.
+the king must not have moved.
+the king is not in check.
+*/
 // New function to check castling validity
 function canCastle(board, turn, side) {
     const kingRow = turn === 'white' ? 7 : 0;
     const kingCol = 4;
 
-    // 1. Check if king has moved
-    if (board[kingRow][kingCol].hasMoved) return false;
-
-    // 2. Check if king is currently in check
-    if (isSquareAttacked(board, { row: kingRow, col: kingCol }, turn)) return false;
+    if (board[kingRow][kingCol].hasMoved) return false; // King has moved
+    if (isSquareAttacked(board, { row: kingRow, col: kingCol }, turn)) return false; // King is in check
 
     if (turn === 'white') {
         if (side === 'K') { // Kingside (g1)
-            // Check rook moved
-            if (board[7][7].name !== 'Wrook' || board[7][7].hasMoved) return false;
-            // Check path clear (f1, g1)
-            if (board[7][5].name !== 'empty' || board[7][6].name !== 'empty') return false;
-            // Check path not attacked (f1, g1)
-            if (isSquareAttacked(board, { row: 7, col: 5 }, turn) || isSquareAttacked(board, { row: 7, col: 6 }, turn)) return false;
+            if (board[7][7].name !== 'Wrook' || board[7][7].hasMoved) return false; // Rook has moved or doesn't exist
+            if (board[7][5].name !== 'empty' || board[7][6].name !== 'empty') return false; // Path isn't clear (f1, g1)
+            if (isSquareAttacked(board, { row: 7, col: 5 }, turn) 
+                || isSquareAttacked(board, { row: 7, col: 6 }, turn)) return false; // Path is attacked (f1, g1)
         } else { // Queenside (c1)
-            // Check rook moved
             if (board[7][0].name !== 'Wrook' || board[7][0].hasMoved) return false;
-            // Check path clear (b1, c1, d1)
-            if (board[7][1].name !== 'empty' || board[7][2].name !== 'empty' || board[7][3].name !== 'empty') return false;
-            // Check path not attacked (c1, d1) - King doesn't pass b1
-            if (isSquareAttacked(board, { row: 7, col: 2 }, turn) || isSquareAttacked(board, { row: 7, col: 3 }, turn)) return false;
+            if (board[7][1].name !== 'empty' || board[7][2].name !== 'empty' || board[7][3].name !== 'empty') return false; // (b1, c1, d1)
+            if (isSquareAttacked(board, { row: 7, col: 2 }, turn) 
+                || isSquareAttacked(board, { row: 7, col: 3 }, turn)) return false; // (c1, d1)
         }
     } else { // Black
         if (side === 'k') { // Kingside (g8)
-            // Check rook moved
             if (board[0][7].name !== 'Brook' || board[0][7].hasMoved) return false;
-            // Check path clear (f8, g8)
-            if (board[0][5].name !== 'empty' || board[0][6].name !== 'empty') return false;
-            // Check path not attacked (f8, g8)
-            if (isSquareAttacked(board, { row: 0, col: 5 }, turn) || isSquareAttacked(board, { row: 0, col: 6 }, turn)) return false;
+            if (board[0][5].name !== 'empty' || board[0][6].name !== 'empty') return false; // (f8, g8)
+            if (isSquareAttacked(board, { row: 0, col: 5 }, turn) 
+                || isSquareAttacked(board, { row: 0, col: 6 }, turn)) return false; // (f8, g8)
         } else { // Queenside (c8)
-            // Check rook moved
             if (board[0][0].name !== 'Brook' || board[0][0].hasMoved) return false;
-            // Check path clear (b8, c8, d8)
-            if (board[0][1].name !== 'empty' || board[0][2].name !== 'empty' || board[0][3].name !== 'empty') return false;
-            // Check path not attacked (c8, d8)
-            if (isSquareAttacked(board, { row: 0, col: 2 }, turn) || isSquareAttacked(board, { row: 0, col: 3 }, turn)) return false;
+            if (board[0][1].name !== 'empty' || board[0][2].name !== 'empty' || board[0][3].name !== 'empty') return false; // (b8, c8, d8)
+            if (isSquareAttacked(board, { row: 0, col: 2 }, turn) 
+                || isSquareAttacked(board, { row: 0, col: 3 }, turn)) return false; // (c8, d8)
         }
     }
-
     return true; // All checks passed
 }
