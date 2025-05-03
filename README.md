@@ -1,10 +1,23 @@
-# React Chess App
+# React Chess App  
+A responsive chess application built with React featuring a Stockfish-powered chess engine.
+> **Note:** This project is still under active development.
+## Features
+- Play against Stockfish AI (currently depth 1)
 
-### ***Work in progress***
+## Demo  
+Latest deployment: [React Chess App](https://timely-kleicha-d88c25.netlify.app/)
+> Note: This is a development version. Checkmate indicators and other features are coming soon.
 
-## Latest Deploy (Depth 1 Bot, uses stockfish)  
+## Technology Stack
+- React.js
+- Stockfish.js (chess engine)
+- Netlify (hosting/deployment)
 
-`Note: There are no checkmate indicators, everything is very much under development.`
+### How to Build
 
-Link :  
-`https://bejewelled-selkie-1046bf.netlify.app/`
+1. `npm run build`
+
+2.  Copy `stockfish-nnue-16-single.wasm` 
+to `dist/assets`
+
+3. `npm run preview`
