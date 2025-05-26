@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Square from './Square';
 import { getClassColor } from '../utils/Utils';
 import { useChess } from '../context/ChessProvider.jsx';
 
 export function RenderBoard() {
-    const { board, engineMove, botMoved, isGameOver, turn, winner } = useChess();
+    const { board, isGameOver, turn, winner } = useChess();
     const [squares, setSquares] = useState([]);
 
     useEffect(() => {
@@ -23,7 +23,7 @@ export function RenderBoard() {
             }
         }
         setSquares(newSquares);
-    }, [ board, engineMove, botMoved ]);
+    }, [ board, turn ]);
 
     return (
         <>

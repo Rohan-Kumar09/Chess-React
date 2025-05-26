@@ -1,5 +1,5 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { InitializeBoard, switchTurn } from '../utils/Utils.js';
+import { createContext, useState, useContext, useEffect } from 'react';
+import { InitializeBoard } from '../utils/Utils.js';
 import { moveSound } from '../assets/exportSound.js';
 import { botServer } from '../BotServer.js';
 import { MakeAMove } from '../utils/MakeMove.js';
@@ -15,6 +15,7 @@ export const ChessProvider = ({ children }) => {
     const [board, setBoard] = useState(() => InitializeBoard());
     const [selectedPiece, setSelectedPiece] = useState({ piece: ' ', row: -1, col: -1, name: 'empty' });
     const [turn, setTurn] = useState('white');
+    const [opponentTurn, setOpponentTurn] = useState('black'); // Opponent's color based on play-as selection
     const [playAs, setPlayAs] = useState('rotate(0deg)');
     const [userMove, setUserMove] = useState('');
     const [isGameOver, setIsGameOver] = useState(false);
@@ -22,11 +23,9 @@ export const ChessProvider = ({ children }) => {
     const [moveFrom, setMoveFrom] = useState('');
     const engine = botServer();
 
+    // Initialize the engine once on mount
     useEffect(() => {
-        async function initializeEngine() {
-            await engine.initializeEngine();
-        }
-        initializeEngine();
+        engine.initializeEngine();
     }, []);
 
     const parseMove = (moveStr) => {
@@ -35,7 +34,6 @@ export const ChessProvider = ({ children }) => {
         const { col: fromCol, row: fromRow } = coordinateMap[botPieceLocation];
         const { col: toCol, row: toRow } = coordinateMap[botMove];
 
-        console.log("from: ", fromRow, fromCol, "to: ", toRow, toCol);
         return {
             from: { row: fromRow, col: fromCol },
             to: { row: toRow, col: toCol }
@@ -63,7 +61,9 @@ export const ChessProvider = ({ children }) => {
         MakeAMove(botPiece, to.row, to.col, setBoard, board, setSelectedPiece, turn, setTurn, audio);
         
         // record Bot's move in history
-        const move = `${botPiece.name} ${from.row}${from.col} ${to.row}${to.col}`;
+        const move = [botPiece.name, 
+                    board[from.row][from.col].coordinate, 
+                    board[to.row][to.col].coordinate];
         setHistory((prevHistory) => [...prevHistory, move]);
         console.log("Bot's move logging in history: ", move);
     };
@@ -75,11 +75,11 @@ export const ChessProvider = ({ children }) => {
         }
 
         console.log("Turn : ", turn);
-        if (turn === 'black') {
-            console.log("Bot's turn");
+        if (turn === opponentTurn) {
+            console.log("Bot is Making a move...");
             handleBotMove();
         }
-    }, [turn, isGameOver, board, moveFrom, moveTo]);
+    }, [turn, opponentTurn, isGameOver, board, moveFrom, moveTo]);
 
     return (
         <ChessContext.Provider
@@ -95,7 +95,8 @@ export const ChessProvider = ({ children }) => {
                 moveFrom, setMoveFrom,
                 engine,
                 userMove, setUserMove,
-                isGameOver, setIsGameOver
+                isGameOver, setIsGameOver,
+                opponentTurn, setOpponentTurn
             }}
         >
         {children}

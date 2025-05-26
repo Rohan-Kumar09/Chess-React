@@ -40,7 +40,7 @@
     display: grid;
     grid-template-rows: repeat(8, var(--square-size));
     grid-template-columns: repeat(8, var(--square-size));
-    padding-top: 5em;
+    margin-top: 5em;
 }
 
 .Squares {
@@ -185,9 +185,33 @@
     background-color: var(--background-color);
     border: none;
 }
+
+.turn-choose-btn {
+    font-size: 3rem;
+    background-color: var(--background-color);
+    border: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.turn-choose-select {
+    font-size: 1rem;
+    background-color: rgb(94, 94, 207);
+    border: 1px solid var(--black-square-color);
+    border-radius: 5px;
+    padding: 0.5rem;
+    font-family: var(--default-font);
+    cursor: pointer;
+}
+
+.turn-choose-select:focus {
+    outline: 1px solid blueviolet;
+    border-color: var(--black-square-color);
+}
 /* Media query */
 
-@media(max-width: 1000px) {
+@media(max-width: 1100px) {
     .game-display {
         flex-direction: column;
         overflow-y: auto;
@@ -205,7 +229,7 @@
     }
 
     .chess-board {
-        padding-top: 1em;
+        margin-top: 1em;
         --square-size: min(11vw, 11vh);
     }
 

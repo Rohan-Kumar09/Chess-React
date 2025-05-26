@@ -6,7 +6,6 @@ import StockfishWorker from 'stockfish/src/stockfish-nnue-16-single.js?worker';
 var depth = 1;
 var fen = "";
 let fenResolver = null;
-var bestMove = "";
 let bestMoveResolver = null;
 
 var isEngineReady = false;
@@ -28,17 +27,14 @@ engine.onmessage = (event) => {
         console.log("readyok received");
     } else {
         if (info.includes("bestmove")) {
-            bestMove = info.split(" ")[1];
-            console.log("Best Move: ", bestMove);
+            const bestMove = info.split(" ")[1];
             if (bestMoveResolver) {
                 bestMoveResolver(bestMove);
                 bestMoveResolver = null;
             }
         } else if (info.slice(0, 3) == "Fen") {
             // case Position is received
-            console.log(info.slice(5, info.length));
             fen = info.slice(5, info.length);
-            console.log("Fen from engine: ", fen);
             if (fenResolver) {
                 fenResolver(fen);
                 fenResolver = null;
@@ -72,10 +68,8 @@ export function botServer() {
 
     function sendFen(fen, userMove, start = false) {
         if (start) {
-            console.log("Sending startpos to engine: ", `position startpos moves ${userMove}`);
             engine.postMessage(`position startpos moves ${userMove}`);
         } else {
-            console.log("Fen with userMove: ", `position fen ${fen} moves ${userMove}`);
             engine.postMessage(`position fen ${fen} moves ${userMove}`);
         }
     }

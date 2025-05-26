@@ -12,15 +12,12 @@ NOTE: Set to white for debugging
 reset button is not well tested - don't trust it.
 
 TODO:
-Add arrows on right click
-Add piece style chooser drop down menu.
-Add Valid Move Shower For Beginners.
+- Add arrows on right click
+- Add piece style chooser drop down menu.
+- Add Valid Move Shower For Beginners.
 
-en passant
-checkmate detection
-castling
-
-notation system
+- checkmate detection
+- notation system
 */
 
 function ChessBoard() {

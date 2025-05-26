@@ -1,24 +1,17 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useChess } from '../context/ChessProvider';
 
 function MoveHistory() {
   const { history } = useChess();
   const scrollRef = useRef(null);
-  // Group moves into rows: [moveNum, white, black]
-  const rows = [];
-  for (let i = 0; i < history.length; i += 2) {
-    rows.push([
-      Math.floor(i / 2) + 1,
-      history[i] || '',
-      history[i + 1] || ''
-    ]);
-  }
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [history]);
+
+  const rowCount = Math.ceil(history.length / 2);
 
   return (
     <div className="move-history" ref={scrollRef}>
@@ -32,13 +25,26 @@ function MoveHistory() {
           </tr>
         </thead>
         <tbody>
-          {rows.map(([moveNum, white, black], idx) => (
-            <tr key={idx}>
-              <td>{moveNum}</td>
-              <td>{white}</td>
-              <td>{black}</td>
-            </tr>
-          ))}
+          {[...Array(rowCount)].map((_, rowIndex) => {
+            const moveNum = rowIndex + 1;
+            const whiteIndex = rowIndex * 2;
+            const blackIndex = whiteIndex + 1;
+            return (
+              <tr key={rowIndex}>
+                <td>{moveNum}</td>
+                <td>
+                  {history[whiteIndex] ? 
+                    `${history[whiteIndex][0]} ${history[whiteIndex][1]}-${history[whiteIndex][2]}` : 
+                    ''}
+                </td>
+                <td>
+                  {history[blackIndex] ? 
+                    `${history[blackIndex][0]} ${history[blackIndex][1]}-${history[blackIndex][2]}` : 
+                    ''}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
