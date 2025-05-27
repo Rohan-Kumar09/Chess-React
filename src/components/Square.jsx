@@ -14,11 +14,19 @@ const Square = ({ row, col, classColor }) => {
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('text/plain', '');
     };
+
     const handleDrop = (e) => {
         e.preventDefault();
         setMoveTo(board[row][col].coordinate);
         setUserMove(board[row][col].coordinate);
-        MakeAMove(selectedPiece, row, col, setBoard, board, setSelectedPiece, turn, setTurn, audio);
+        const moveWasValid = MakeAMove(selectedPiece, row, col, setBoard, board, setSelectedPiece, turn, setTurn, audio);
+        if (moveWasValid && selectedPiece.name !== 'empty') {
+            const move = [selectedPiece.name, 
+                            board[selectedPiece.row][selectedPiece.col].coordinate, 
+                            board[row][col].coordinate];
+            setHistory((prevHistory) => [...prevHistory, move]);
+            console.log("User's move logging in history: ", move);
+        }
     };
 
     return (
