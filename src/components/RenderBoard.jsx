@@ -23,7 +23,7 @@ export function RenderBoard() {
             }
         }
         setSquares(newSquares);
-    }, [ board, turn ]);
+    }, [ board, turn, isGameOver, winner ]);
 
     return (
         <>

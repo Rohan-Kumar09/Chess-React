@@ -24,7 +24,7 @@ function ChessBoard() {
     const { turn, playAs, setColor } = useChess(); 
 
     useEffect(() => {
-        turn == 'white' ? setColor('rgb(104, 121, 214)') : setColor('darkblue');
+        turn == 'white' ? setColor('rgb(231, 240, 239)') : setColor('rgb(0, 0, 0)');
     }, [turn, setColor])
 
     // const [pieceStyle, setPieceStyle] = useState(0);

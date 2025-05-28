@@ -1,9 +1,11 @@
 import '../styles/ChessBoard.css';
 import { InitializeBoard } from '../utils/Utils';
 import { useChess } from '../context/ChessProvider';
+import { MdSwapVerticalCircle } from "react-icons/md";
+import { IoMdRefreshCircle } from "react-icons/io";
 
 const SideButtons = () => {
-    const { playAs, setPlayAs, setBoard, setTurn, setSelectedPiece, engine, setHistory, opponentTurn, setOpponentTurn } = useChess();
+    const { playAs, setPlayAs, setBoard, setTurn, setSelectedPiece, engine, setHistory, setOpponentTurn, setMoveFrom, setMoveTo } = useChess();
     
     function rotateBoard() {
         playAs === 'rotate(180deg)' ? setPlayAs('rotate(0deg)') : setPlayAs('rotate(180deg)');
@@ -15,20 +17,24 @@ const SideButtons = () => {
         setTurn('white');
         setHistory([]);
         setSelectedPiece({piece: ' ', row: -1, col: -1, name: 'empty'});
+        setMoveFrom('');
+        setMoveTo('');
     }
 
     return (
         <>
             <div className='side-buttons'>
-                <div>Toggle Board</div>
+                <div className='side-buttons-title'>Toggle Board</div>
                 <button className='toggle-btn' onClick={() => {
                     rotateBoard();
-                }}>🔃</button>
-                <div>Reset Game</div>
+                }}><MdSwapVerticalCircle /></button>
+
+                <div className='side-buttons-title'>Reset Game</div>
                 <button className='reset-btn' onClick={() => {
                     resetGame();
-                }}>🔄</button>
-                <div>Play AS: </div>
+                }}><IoMdRefreshCircle /></button>
+
+                <div className='side-buttons-title'>Play AS</div>
                 <button className='turn-choose-btn'>
                     <select className='turn-choose-select' onChange={(e) => {
                         const userColor = e.target.value;
@@ -44,11 +50,12 @@ const SideButtons = () => {
 
                         resetGame();
                     }}>
-                        <option value='white'>W</option>
-                        <option value='black'>B</option>
+                        <option value='white'>White</option>
+                        <option value='black'>Black</option>
                     </select>
                 </button>
-                <div>Bot Strength: </div>
+
+                <div className='side-buttons-title'>Bot Strength</div>
                 <button className='depth-choose-btn'>
                     <select
                         className='turn-choose-select'

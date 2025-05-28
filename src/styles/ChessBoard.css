@@ -14,7 +14,7 @@
     --black-square-color: #b58863;
     --white-square-color: #f0d9b5;
     --background-color: lightblue;
-    --default-font: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif
+    --default-font: sans-serif;
 }
 
 .game-display {
@@ -86,12 +86,19 @@
 }
 
 .turn-variable {
-    font-size: 3rem;
-    font-family: var(--default-font);
-    font-weight: normal;
     display: flex;
     justify-content: center;
-    color: rgb(48, 0, 83);
+
+    font-size: 3rem;
+    font-family: var(--default-font);
+    font-weight: bold;
+
+    background: linear-gradient(45deg, #446f92, #4713a1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
 }
 
 /* move history */
@@ -121,8 +128,13 @@
 .move-history h2 {
     font-size: 2rem;
     font-family: var(--default-font);
-    font-weight: normal;
-    color: rgb(26, 39, 218);
+
+    background: linear-gradient(45deg, #446f92, #4713a1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
 }
 
 .move-history table {
@@ -147,9 +159,15 @@
 }
 
 .move-history th {
+    font: bold 1.2rem var(--default-font);
     background: #e3e8ff;
-    color: #1a27da;
-    font-weight: bold;
+
+    background: linear-gradient(45deg, #446f92, #4713a1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
 }
 
 .move-history tr:nth-child(even) td {
@@ -170,8 +188,9 @@
 .side-buttons {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    text-align: center;
     align-items: center;
+    gap: 0.5rem;
 }
 
 .toggle-btn {
@@ -218,12 +237,26 @@
 
 .turn-choose-select {
     font-size: 1rem;
+    color: white;
     background-color: rgb(94, 94, 207);
     border-radius: 5px;
     padding: 0.5rem;
     font-family: var(--default-font);
     cursor: pointer;
     outline: none;
+}
+
+.side-buttons-title {
+    font-size: 1.rem;
+    font-family: var(--default-font);
+    font-weight: bold;
+    background: linear-gradient(45deg, #2196F3, #673AB7);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
 }
 
 /* Media query */
