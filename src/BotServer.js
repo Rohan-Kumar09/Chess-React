@@ -89,6 +89,11 @@ export function botServer() {
         });
     }
 
+    function setDepth(newDepth) {
+        depth = newDepth;
+        console.log("Depth set to:", depth);
+    }
+
     return {
         initializeEngine,
         newGame,
@@ -96,6 +101,7 @@ export function botServer() {
         getFen,
         getFirstMove,
         getBestMove,
+        setDepth,
         isEngineReady
     };
 }

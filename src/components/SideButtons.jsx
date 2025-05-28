@@ -16,6 +16,7 @@ const SideButtons = () => {
         setHistory([]);
         setSelectedPiece({piece: ' ', row: -1, col: -1, name: 'empty'});
     }
+
     return (
         <>
             <div className='side-buttons'>
@@ -45,6 +46,18 @@ const SideButtons = () => {
                     }}>
                         <option value='white'>W</option>
                         <option value='black'>B</option>
+                    </select>
+                </button>
+                <div>Bot Strength: </div>
+                <button className='depth-choose-btn'>
+                    <select
+                        className='turn-choose-select'
+                        defaultValue='1'
+                        onChange={e => engine.setDepth(Number(e.target.value))}
+                    >
+                        {Array.from({length: 25}, (_, i) => i + 1).map(depth => (
+                            <option key={depth} value={depth}>{depth}</option>
+                        ))}
                     </select>
                 </button>
             </div>
