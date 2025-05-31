@@ -58,7 +58,7 @@ export const ChessProvider = ({ children }) => {
             name: board[from.row][from.col].name 
         };
         // setSelectedPiece({ piece: board[from.row][from.col].emoji, row: to.row, col: to.col, name: board[from.row][from.col].name });
-        MakeAMove(botPiece, to.row, to.col, setBoard, board, setSelectedPiece, turn, setTurn, audio);
+        const { checkmate, validMove } = MakeAMove(botPiece, to.row, to.col, setBoard, board, setSelectedPiece, turn, setTurn, audio);
         
         // record Bot's move in history
         const move = [botPiece.name, 
@@ -66,6 +66,11 @@ export const ChessProvider = ({ children }) => {
                     board[to.row][to.col].coordinate];
         setHistory((prevHistory) => [...prevHistory, move]);
         console.log("Bot's move logging in history: ", move);
+
+        if (checkmate) {
+            setIsGameOver(true);
+            console.log("Checkmate! Bot wins.");
+        }
     };
 
     useEffect(() => {

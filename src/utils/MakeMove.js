@@ -6,17 +6,14 @@ import { Pieces, switchTurn } from './Utils.js'; // function for returning piece
 //                Switches turn to other player's turn and sets the new board
 //                Promotes pawns if they reach the end of the board
 //                Returns true if the move resulted in checkmate, false otherwise.
-let gameOver = false;
+
+// RETURN { checkmate: true, validMove: false }
+
 export function MakeAMove(selectedPiece, goToRow, goToCol, setBoard, board, setSelectedPiece, turn, setTurn, audio) {
 
     // Use a deep copy to avoid modifying the original state directly before setBoard
     let newBoard = JSON.parse(JSON.stringify(board));
     const pieces = Pieces();
-
-    if (inCheckmate(newBoard, turn === 'white' ? 'black' : 'white')) {
-        gameOver = true;
-        return true;
-    }
 
     // Reset lastMovedTwo flag for all pawns of current player's color
     for (let r = 0; r < newBoard.length; r++) {
@@ -32,14 +29,14 @@ export function MakeAMove(selectedPiece, goToRow, goToCol, setBoard, board, setS
     if(!FindValidMoves(selectedPiece, goToRow, goToCol, board, turn, setTurn, audio)){
         // Reset selected piece if invalid move
         setSelectedPiece({emoji: ' ', row: -1, col: -1, name: 'empty'});
-        return false;
+        return { checkmate: false, validMove: false };
     }
 
     // Check for friendly fire
     if (selectedPiece.name[0] === 'W' && board[goToRow][goToCol].name[0] === 'W' || 
         selectedPiece.name[0] === 'B' && board[goToRow][goToCol].name[0] === 'B'){
         setSelectedPiece({emoji: ' ', row: -1, col: -1, name: 'empty'});
-        return false;
+        return { checkmate: false, validMove: false };
     }
     
     // The move is valid, apply it to the new board
@@ -142,9 +139,13 @@ export function MakeAMove(selectedPiece, goToRow, goToCol, setBoard, board, setS
         };
     }
     
-    // Reset selected piece
-    setSelectedPiece({emoji: ' ', row: -1, col: -1, name: 'empty'});
+    // Apply the move and update state
+    setSelectedPiece({ emoji: ' ', row: -1, col: -1, name: 'empty' });
     setBoard(newBoard);
     switchTurn(turn, setTurn);
-    return true;
+    
+    // After move, check if opponent is in checkmate
+    const opponent = turn === 'white' ? 'black' : 'white';
+    const isMate = inCheckmate(newBoard, opponent);
+    return { checkmate: isMate, validMove: true };
 }

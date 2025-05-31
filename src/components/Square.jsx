@@ -6,7 +6,7 @@ const Square = ({ row, col, classColor }) => {
     const { setMoveTo, setMoveFrom, playAs, board,
             setSelectedPiece, selectedPiece, setBoard,
             turn, setTurn, audio, setUserMove,
-            setHistory } = useChess();
+            setHistory, setIsGameOver } = useChess();
 
     const handleDragStart = (e) => {
         setMoveFrom(board[row][col].coordinate);
@@ -19,13 +19,18 @@ const Square = ({ row, col, classColor }) => {
         e.preventDefault();
         setMoveTo(board[row][col].coordinate);
         setUserMove(board[row][col].coordinate);
-        const moveWasValid = MakeAMove(selectedPiece, row, col, setBoard, board, setSelectedPiece, turn, setTurn, audio);
-        if (moveWasValid && selectedPiece.name !== 'empty') {
+        const { checkmate, validMove } = MakeAMove(selectedPiece, row, col, setBoard, board, setSelectedPiece, turn, setTurn, audio);
+        if (validMove && selectedPiece.name !== 'empty') {
             const move = [selectedPiece.name, 
                             board[selectedPiece.row][selectedPiece.col].coordinate, 
                             board[row][col].coordinate];
             setHistory((prevHistory) => [...prevHistory, move]);
             console.log("User's move logging in history: ", move);
+        }
+        if (checkmate) {
+            setIsGameOver(true);
+            console.log("Checkmate! Player Won.");
+            return;
         }
     };
 
@@ -45,13 +50,19 @@ const Square = ({ row, col, classColor }) => {
                 } else if ((turn === 'white' && board[row][col].name[0] !== 'W') || (turn === 'black' && board[row][col].name[0] !== 'B')) {
                     setMoveTo(board[row][col].coordinate);
                     setUserMove(board[row][col].coordinate);
-                    const moveWasValid = MakeAMove(selectedPiece, row, col, setBoard, board, setSelectedPiece, turn, setTurn, audio);
-                    if (moveWasValid && selectedPiece.name !== 'empty') {
+                    const { checkmate, validMove } = MakeAMove(selectedPiece, row, col, setBoard, board, setSelectedPiece, turn, setTurn, audio);
+                    if (validMove && selectedPiece.name !== 'empty') {
                         const move = [selectedPiece.name, 
                                      board[selectedPiece.row][selectedPiece.col].coordinate, 
                                      board[row][col].coordinate];
                         setHistory((prevHistory) => [...prevHistory, move]);
                         console.log("User's move logging in history: ", move);
+                    }
+
+                    if (checkmate) {
+                        setIsGameOver(true);
+                        console.log("Checkmate! Player Won.");
+                        return;
                     }
                 }
             }}

@@ -359,7 +359,43 @@ function isKingInCheckAfterMove(selectedPiece, goToRow, goToCol, board, turn) {
 
 
 export function inCheckmate(board, turn) {
-    return false;
+    // 1) Locate the king
+    const kingName = turn === 'white' ? 'Wking' : 'Bking';
+    let kingRow = -1, kingCol = -1;
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+            if (board[r][c].name === kingName) {
+                kingRow = r; kingCol = c;
+                break;
+            }
+        }
+        if (kingRow !== -1) break;
+    }
+
+    // 2) If king not found or not currently in check, not checkmate
+    if (kingRow === -1 || !isSquareAttacked(board, { row: kingRow, col: kingCol }, turn)) {
+        return false;
+    }
+
+    // 3) For every piece of 'turn', try every destination; if any legal move exists, not checkmate
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+            const sq = board[r][c];
+            if (sq.name !== 'empty' && sq.name[0] === (turn === 'white' ? 'W' : 'B')) {
+                const pieceObj = { piece: sq.emoji, row: r, col: c, name: sq.name };
+                for (let tr = 0; tr < 8; tr++) {
+                    for (let tc = 0; tc < 8; tc++) {
+                        if (FindValidMoves(pieceObj, tr, tc, board, turn)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // no escape found
+    return true;
 }
 
 // find out if the square is under attack by the opponent
