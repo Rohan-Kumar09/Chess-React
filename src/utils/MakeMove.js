@@ -1,4 +1,4 @@
-import { FindValidMoves, inCheckmate, isSquareAttacked } from './ValidMoves.js'; // function for finding valid piece moves
+import { FindValidMoves, inCheckmate } from './ValidMoves.js'; // function for finding valid piece moves
 import { Pieces, switchTurn } from './Utils.js'; // function for returning piece types and switching turns
 
 // PreCondition: selectedPiece is a valid piece

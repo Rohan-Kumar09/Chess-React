@@ -1,24 +1,22 @@
 import '../styles/ChessBoard.css';
-import { InitializeBoard } from '../utils/Utils';
 import { useChess } from '../context/ChessProvider';
 import { MdSwapVerticalCircle } from "react-icons/md";
 import { IoMdRefreshCircle } from "react-icons/io";
+import { useResetGame } from '../utils/resetGame';
 
 const SideButtons = () => {
-    const { playAs, setPlayAs, setBoard, setTurn, setSelectedPiece, engine, setHistory, setOpponentTurn, setMoveFrom, setMoveTo } = useChess();
+    const { 
+        playAs, 
+        setPlayAs, 
+        setTurn, 
+        engine, 
+        setOpponentTurn
+    } = useChess();
+
+    const resetGame = useResetGame();
     
     function rotateBoard() {
         playAs === 'rotate(180deg)' ? setPlayAs('rotate(0deg)') : setPlayAs('rotate(180deg)');
-    }
-
-    function resetGame() {
-        engine.newGame();
-        setBoard(InitializeBoard());
-        setTurn('white');
-        setHistory([]);
-        setSelectedPiece({piece: ' ', row: -1, col: -1, name: 'empty'});
-        setMoveFrom('');
-        setMoveTo('');
     }
 
     return (

@@ -3,10 +3,22 @@ import { MakeAMove } from '../utils/MakeMove.js';
 import { useChess } from '../context/ChessProvider.jsx';
 
 const Square = ({ row, col, classColor }) => {
-    const { setMoveTo, setMoveFrom, playAs, board,
-            setSelectedPiece, selectedPiece, setBoard,
-            turn, setTurn, audio, setUserMove,
-            setHistory, setIsGameOver } = useChess();
+    const { 
+        setMoveTo, 
+        setMoveFrom, 
+        playAs, 
+        board,
+        setSelectedPiece, 
+        selectedPiece, 
+        setBoard,
+        turn, 
+        setTurn, 
+        audio, 
+        setUserMove,
+        setHistory, 
+        setIsGameOver, 
+        setWinner 
+    } = useChess();
 
     const handleDragStart = (e) => {
         setMoveFrom(board[row][col].coordinate);
@@ -29,6 +41,7 @@ const Square = ({ row, col, classColor }) => {
         }
         if (checkmate) {
             setIsGameOver(true);
+            setWinner('Player');
             console.log("Checkmate! Player Won.");
             return;
         }
@@ -61,6 +74,7 @@ const Square = ({ row, col, classColor }) => {
 
                     if (checkmate) {
                         setIsGameOver(true);
+                        setWinner('Player');
                         console.log("Checkmate! Player Won.");
                         return;
                     }

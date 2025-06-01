@@ -21,6 +21,7 @@ export const ChessProvider = ({ children }) => {
     const [isGameOver, setIsGameOver] = useState(false);
     const [moveTo, setMoveTo] = useState('');
     const [moveFrom, setMoveFrom] = useState('');
+    const [winner, setWinner] = useState('');
     const engine = botServer();
 
     // Initialize the engine once on mount
@@ -58,7 +59,7 @@ export const ChessProvider = ({ children }) => {
             name: board[from.row][from.col].name 
         };
         // setSelectedPiece({ piece: board[from.row][from.col].emoji, row: to.row, col: to.col, name: board[from.row][from.col].name });
-        const { checkmate, validMove } = MakeAMove(botPiece, to.row, to.col, setBoard, board, setSelectedPiece, turn, setTurn, audio);
+        const { checkmate } = MakeAMove(botPiece, to.row, to.col, setBoard, board, setSelectedPiece, turn, setTurn, audio);
         
         // record Bot's move in history
         const move = [botPiece.name, 
@@ -69,6 +70,7 @@ export const ChessProvider = ({ children }) => {
 
         if (checkmate) {
             setIsGameOver(true);
+            setWinner('Bot');
             console.log("Checkmate! Bot wins.");
         }
     };
@@ -101,7 +103,8 @@ export const ChessProvider = ({ children }) => {
                 engine,
                 userMove, setUserMove,
                 isGameOver, setIsGameOver,
-                opponentTurn, setOpponentTurn
+                opponentTurn, setOpponentTurn,
+                winner, setWinner
             }}
         >
         {children}

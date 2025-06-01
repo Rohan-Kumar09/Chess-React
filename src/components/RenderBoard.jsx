@@ -2,11 +2,16 @@ import { useState, useEffect } from 'react';
 import Square from './Square';
 import { getClassColor } from '../utils/Utils';
 import { useChess } from '../context/ChessProvider.jsx';
+import GameOverOverlay from './GameOverOverlay.jsx';
 
 export function RenderBoard() {
-    const { board, isGameOver, turn, winner } = useChess();
+    const { 
+        board, 
+        turn
+    } = useChess();
+        
+    // Initialize the board if it's not already set
     const [squares, setSquares] = useState([]);
-
     useEffect(() => {
         let newSquares = [];
         for (let row = 0; row < 8; row++) {
@@ -28,14 +33,7 @@ export function RenderBoard() {
     return (
         <>
             {squares}
-            {isGameOver && (
-                <div className="game-over-overlay">
-                    <div className="game-over-message">
-                        <h2>Game Over!</h2>
-                        <p>{winner ? `${winner.charAt(0).toUpperCase() + winner.slice(1)} wins by checkmate.` : 'Checkmate.'}</p>
-                    </div>
-                </div>
-            )}
+            <GameOverOverlay />
         </>
     );
 }

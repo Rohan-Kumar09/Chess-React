@@ -6,20 +6,6 @@ import Info from '../components/Info.jsx'; // function for displaying turn
 import MoveHistory from '../components/MoveHistory.jsx';
 import SideButtons from '../components/SideButtons.jsx';
 
-/*
-
-NOTE: Set to white for debugging
-reset button is not well tested - don't trust it.
-
-TODO:
-- Add arrows on right click
-- Add piece style chooser drop down menu.
-- Add Valid Move Shower For Beginners.
-
-- checkmate detection
-- notation system
-*/
-
 function ChessBoard() {
     const { turn, playAs, setColor } = useChess(); 
 
